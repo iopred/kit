@@ -1,0 +1,40 @@
+# This is a example whih typescript configuration
+
+VAR: 
+    # defind typescript path
+    gofmt: "/Users/chrisrhodes/go/bin/gofmt"
+    goimports: "/Users/chrisrhodes/go/bin/goimports"
+    go: "/usr/local/go/bin"
+ENV:
+    GOPATH: /Users/chrisrhodes/Documents/Go/Kit
+# optional 
+CONSOLE : right
+
+LISTENER:  
+    -   CMD : $goimports -w $FILE
+        WATCH : *.go
+    -   CMD : $go test -v *.go
+        WATCH : *.go
+
+#  $ROOT       = .onsave file directory
+#  $FILE       = current file path
+#  $FILENAME   = current file name
+#  $BASENAME   = current file name, not postfix
+#  $DIR        = current file directory
+
+# CONSOLE options
+#  false       = not diaplay
+#  name left   = diaplay at left view
+#  name right  = diaplay at right view
+#  name bottom = diaplay at bottom view
+
+# WATCH options
+# pattern are separated by commas，reserved words has "BUILD","NOBUILD"
+#  - BUILD     = watch (super + b) key binding 
+#  - NOBUILD   = just watch (on save) event
+
+# ENV options
+#  - CWP     = changes the current working directory to the given path.
+#  - PATH
+#  - HOME
+#  ...

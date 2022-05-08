@@ -44,15 +44,16 @@ all parallizable
 what if your api for your system can be this:
 
 const kat = kit() // produce kat()
-kit == kat // true
-kit() == kat // true and repeatable
+kit != kat // true
+kit == kat() // true and repeatable
+kat == kit() // true and repeatable
 kit() == kat() // false!
 
 ok, now you can implement that if you have two states, an on state, and an off state, and the output of one state is a valid input into the other state, as you're just passing the function back and forth
 
-so you can do this, and output a '0' on kit() runs, and '1' on kit2() runs?
+so you can do this, and output a '0' on kit() runs, and '1' on kat() runs?
 
-then you can just interpolate that output! scaling half way between kit and kit2 returns half the change between the simulations, which is the same simulation!
+then you can just interpolate that output! scaling half way between kit and kat returns half the change between the simulations, which is the same simulation!
 
 ok, so now we have a quine, but the problem is, our state is lost on every run!! oh no!!!
 
@@ -74,7 +75,23 @@ what if we created a structure that allowed programs to be written
 
 and what if that structure could run itself?
 
-well, then you could emulate a brain that can see & experience itself
+well, then you could emulate a brain that can see & experience itself, and because it can see its own state.
+and because our brain can output a brain it can make changes to it, and produce another, different brain!!!!
+
+ok, so now we're in a weird place, we can produce a program that can produce itself, but also one that can modify it's own state to produce an inbetween state..
+
+well then, wouldn't it be cool if calling the method with a scalar worked?!?!?!
+
+kit(0.5) == kit(1) - kit(-0.5)
+kit(kit(0.5)) == kit(kit(1) - kit(0.5))
+
+kitten = kit(10)
+kitwenty = kit(10) + kit(10)
+
+
+
+
+kit is a scalar programming language, where the program input is the program
 
 
 
