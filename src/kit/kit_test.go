@@ -65,10 +65,7 @@ func TestValue(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		n, err := system.Next(c.Scalar).Node("test")
-		if err != nil {
-			t.Errorf("could not find test node")
-		}
+		n := system.Next(c.Scalar).Node("test")
 		valueMatches(t, c.Value, n.Value)
 	}
 }
