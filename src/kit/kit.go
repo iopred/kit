@@ -91,7 +91,7 @@ func (n Node) Distance(n2 Node) float64 {
 }
 
 func (n Node) ExistsWith(n2 Node) bool {
-	return n.T > n2.T+n2.Dt && n.T < n2.T+n2.Dt
+	return n.T+n.Dt >= n2.T && n.T <= n2.T+n2.Dt
 }
 
 func (n Node) String() string {
