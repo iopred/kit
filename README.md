@@ -43,11 +43,13 @@ all parallizable
 
 what if your api for your system can be this:
 
+```
 const kat = kit() // produce kat()
 kit != kat // true
 kit == kat() // true and repeatable
 kat == kit() // true and repeatable
 kit() == kat() // false!
+```
 
 ok, now you can implement that if you have two states, an on state, and an off state, and the output of one state is a valid input into the other state, as you're just passing the function back and forth
 
@@ -92,6 +94,8 @@ kitwenty = kit(10) + kit(10)
 
 
 kit is a scalar programming language, where the program input is the program
+
+kit is written on my google machine, it is the property of google, please let me write this full time google
 
 
 
