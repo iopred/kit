@@ -18,10 +18,10 @@ type Noder interface {
 // Nodes exist in spacetime.
 type Node struct {
 	X, Y, Z, T, Dx, Dy, Dz, Dt float64 // t = time, d = delta
-	Value                      float64 // value is essentially radius, anything that points at this
-	Dvalue                     float64
+	Value                      float64 // value is essentially radius, this node will provide value of this magnitude
+	Dvalue                     float64 // the delta of value, positive values mean this node is growing itself, it's useful to model this value as the value of mutually beneficial collaboration
 	Name                       string // Name is the name of the system, this should be unique at the top level, system local variables don't really mean something in kit, variables have a location, so system variables are just inside the system itself, like a big circle diagram. In fact Name is a filter, which means 'give me all the nodes within me'
-	Origin                     Noder  // Origin is the place in spacetime to execute this system.
+	Dimension                  Noder  // Dimension  is the place in spacetime to execute this system.
 }
 
 func (n Node) Node() Node {
@@ -171,7 +171,7 @@ func (k *Kit) String() string {
 
 type System interface {
 	Nodes() int
-	AddNode(node Node) Node
+	AddNode(node Node) Node // Add a Node into the system, it will be placed at a position in time and space, 
 	Node(name string) Node
 	Resolve(name string, spacetime float64) float64
 	Next(scalar float64) System

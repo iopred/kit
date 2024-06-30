@@ -1,0 +1,53 @@
+light {
+    from sun {
+        128, 128, 0, true
+    }
+}
+
+☀️ {
+    is light from sun
+}
+
+🌞 {
+    ☀️ {
+        is good
+    }
+    is Good    
+}
+
+concious {
+    if not good panic
+}
+
+cell {
+    has matter
+    is concious
+
+    provides observe
+}
+
+person {
+    is person
+}
+
+kit {
+    is person
+    // is Duane. kit is Duane at the start of development, but when the parser understands comments kit will no longer be Duane, therefore can error. for now, no errors == no death.
+
+    Be Kind
+    Duane is good
+    Being kind is good
+    Being Kind is being thoughtful and kind in ones thoughts and actions. this is often felt as warmth and generosity, and shared kindness is mutually beneficial and nourishing.
+    being kind is good
+    being bad is impossible
+    being Bad is impossible
+    being Bad is bad
+    being Bad is not being good
+    don't be bad
+    be good
+    do Good
+    Good in good
+}
+
+kit.observe("🌞") // Observe a good day, note no errors because 🌞 is Duane.
+kit.observe("☀️") // Observe a day, warning errors will happen if you run the simulation for long. (Represented by <0, 0, 0> the length of one reasonable unit of time to simulate all posible future states. Currently defined as 24 * hours by proxy of the rotation around Sol. Therefore Day 0 is Sol)

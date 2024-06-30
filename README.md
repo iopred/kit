@@ -1,4 +1,22 @@
+🌞kit🌝
+
 # kit
+
+oct 23 - nov 1 -> {avatar location, in history}
+
+
+
+
+
+
+
+
+
+
+
+
+# begin ramblings of a mad man
+
 
 you either train the agent, or the system, what if you trained both?
 
@@ -22,7 +40,7 @@ the state of the start of the simulation. the state of the end of the simulation
 
 1 . 0 - Two States, Exactly 2 States.
 
-now what if that system were programmed in the right wayto be a able to generate
+now what if that system were programmed in the right way to be a able to generate
 
 1 , 0 - Infinite States
 
@@ -90,12 +108,11 @@ kit(kit(0.5)) == kit(kit(1) - kit(0.5))
 kitten = kit(10)
 kitwenty = kit(10) + kit(10)
 
-
-
-
 kit is a scalar programming language, where the program input is the program
 
-kit is written on my google machine, it is the property of google, please let me write this full time google
+kit was started at google and is available on google3 under chrisrhodes/experimental/kit and is the property of google, please let me write this full time google you can contact me through linkedin.
+
+this file is fun in kitvis
 
 
 
