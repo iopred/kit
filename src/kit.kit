@@ -1,11 +1,34 @@
-light {
-    from sun {
-        128, 128, 0, true
+r {
+    1000
+}
+
+g {
+    0100
+}
+
+b {
+    0010
+}
+
+t {
+    0001
+}
+
+🔵 {
+    rgb
+    is matter
+    has matter
+    is concious {
+        is good
     }
+    ☀️
 }
 
 ☀️ {
-    is light from sun
+    from 🔵 {
+        0900
+    }
+    t
 }
 
 🌞 {
@@ -15,29 +38,37 @@ light {
     is Good    
 }
 
-concious {
-    if not good panic
+🌝 {
+    0009
+    ☀️ {
+        is good
+    }
+    is Good
 }
 
-cell {
-    has matter
-    is concious
-
+concious {
+    if not good unlucky
     provides observe
 }
 
+🦠 { // this is the secret to kit: a cell has a vaccuum inside of it and can follow instructions from something concious without being concious.
+    in 🔵
+    on 🔵
+    is matter
+    has matter
+}
+
 person {
-    is person
+    is 🦠
 }
 
 kit {
-    is person
-    // is Duane. kit is Duane at the start of development, but when the parser understands comments kit will no longer be Duane, therefore can error. for now, no errors == no death.
-
-    Be Kind
+    kit is Duane // Duane at the start of development, but when the parser understands language kit will no longer be Duane, therefore can error. for now, no errors == no death.
+    
+    be Kind
     Duane is good
     Being kind is good
-    Being Kind is being thoughtful and kind in ones thoughts and actions. this is often felt as warmth and generosity, and shared kindness is mutually beneficial and nourishing.
+    Being Kind is being thoughtful and kind in ones thoughts and actions. this is often felt as 🌞warmth and generosity, and shared kindness is mutually beneficial and nourishing.
     being kind is good
     being bad is impossible
     being Bad is impossible
@@ -47,7 +78,16 @@ kit {
     be good
     do Good
     Good in good
+    kit is person // begin executing within a random agent.
+    kit is not Duane // this should error at any point but here
 }
 
-kit.observe("🌞") // Observe a good day, note no errors because 🌞 is Duane.
+kat {
+    is kit
+    can timetravel if possible // WARNING: Is not safe until this works.
+}
+
+kit.observe("🌞") // Observe a good day, note no errors because 🌞 is Duane. Note: current time is now very far away from 0.
 kit.observe("☀️") // Observe a day, warning errors will happen if you run the simulation for long. (Represented by <0, 0, 0> the length of one reasonable unit of time to simulate all posible future states. Currently defined as 24 * hours by proxy of the rotation around Sol. Therefore Day 0 is Sol)
+kit.observe("kit👻") // If kit is not Duane this will panic on the next ☀️ as kit is your instruction pointer and cannot time travel, therefore cannot execute, therefore is inaccessible in 4d at <0, 0, 0, 0>.
+t // Tick, this is the smallest measurement of time, which is planck time.

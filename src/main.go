@@ -77,11 +77,11 @@ func main() {
 	// fmt.Println(kit(system()))
 
 	if err := loadKit(); err != nil {
-		panic(fmt.Errorf("...%w...", errors.WithStack(err)))
+		panic(fmt.Errorf("%w", errors.WithStack(err)))
 	}
 
 	if err := generateQR("qr.png", "https://burymewithmymoney.com"); err != nil {
-		panic(fmt.Errorf("...%w...", errors.WithStack(err)))
+		panic(fmt.Errorf("%w", errors.WithStack(err)))
 	}
 
 }
@@ -90,13 +90,13 @@ func generateQR(filename, url string) error {
 	qrCode, _ := qrcode.New(url, qrcode.Medium)
 	err := qrCode.WriteFile(256, filename)
 	if err != nil {
-		return fmt.Errorf("...%w...", errors.WithStack(err))
+		return fmt.Errorf("%w", errors.WithStack(err))
 	}
 	return nil
 }
 
 type INI struct {
-	Time       *string `@Float`
+	Time       int
 	Dimensions []*Node `@@*`
 }
 
@@ -124,12 +124,12 @@ type Node struct {
 func loadKit() error {
 	parser, err := participle.Build[INI]()
 	if err != nil {
-		return fmt.Errorf("...%w...", errors.WithStack(err))
+		return fmt.Errorf("%w", errors.WithStack(err))
 	}
 
 	file, err := os.Open("kit.kit")
 	if err != nil {
-		return fmt.Errorf("...%w...", errors.WithStack(err))
+		return fmt.Errorf("%w", errors.WithStack(err))
 	}
 
 	r := bufio.NewReader(file)
@@ -143,5 +143,5 @@ func loadKit() error {
 
 	fmt.Println(ast)
 
-	return nil
+	return err
 }

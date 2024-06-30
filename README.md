@@ -2,18 +2,18 @@
 
 # kit
 
-oct 23 - nov 1 -> {avatar location, in history}
+oct 23 -> nov 1 -> {
+    avatar location
+    in history
+}
 
+jun 29 2024 {
+    age 41
+}
 
-
-
-
-
-
-
-
-
-
+jun 30 2024 {
+    🌞kit🌝
+}
 
 # begin ramblings of a mad man
 
