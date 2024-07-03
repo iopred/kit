@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 	"text/template"
 
 	"github.com/pkg/errors"
@@ -13,23 +14,23 @@ import (
 func main() {
 	var kit Node
 	if kit, err := loadKit(); err == nil {
-		if err := generateQR("kit.qr.png", "kit.iop.red"); err != nil {
+		if err := generateQR("qr.kit.png", "kit.iop.red"); err != nil {
 			fmt.Errorf("%w", errors.WithStack(err))
 		}
 
-		if err := generateQR("r.qr.png", "kit.iop.red/r"); err != nil {
+		if err := generateQR("qr.r.png", "kit.iop.red/r"); err != nil {
 			fmt.Errorf("%w", errors.WithStack(err))
 		}
 
-		if err := generateQR("g.qr.png", "kit.iop.red/"+kit.now()+".qr"); err != nil {
+		if err := generateQR("qr.g.png", "qr.kit.iop.red./"+kit.now()); err != nil {
 			fmt.Errorf("%w", errors.WithStack(err))
 		}
 
-		if err := generateQR("t.qr.png", "http://kit.iop.red/"+kit.next()+".qr"); err != nil {
+		if err := generateQR("qr.t.png", "http://qr.kit.iop.red./"+kit.next()); err != nil {
 			fmt.Errorf("%w", errors.WithStack(err))
 		}
 
-		if err := generateQR("kit.iop.red.qr.png", "http://localhost:3242/kit.iop.red.qr"); err != nil {
+		if err := generateQR("qr.kit.iop.red.png", "http://localhost:3242/qr.kit.iop.red"); err != nil {
 			fmt.Errorf("%w", errors.WithStack(err))
 		}
 	} else {
@@ -40,138 +41,193 @@ func main() {
 
 	generateQR("localhost.png", fmt.Sprintf("http://localhost:%d/", port))
 
-	if err := generateQR("localhost.kit.png", fmt.Sprintf("http://localhost:%d/kit.qr", port)); err != nil {
+	if err := generateQR("localhost.qr.kit.png", fmt.Sprintf("http://localhost:%d/qr.kit", port)); err != nil {
 		fmt.Errorf("%w", errors.WithStack(err))
+	}
+
+	kitHandler := func(w http.ResponseWriter, r *http.Request) {
+		html := `
+<html>
+<head>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+		div {
+			display: inline-grid;
+			grid-template-areas:
+				"r g b t"
+				"a k k k"
+				"d k k k"
+				"d k k k";
+			place-self: center;
+			// background-image: url('kit.png');
+			// background-repeat: no-repeat;
+		}
+		div > * {
+			mix-blend-mode: multiply;
+		}
+		span,
+		iframe {
+			border: 0px;
+		}
+		#k {
+			grid-area: k;
+		}
+	</style>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<body>
+<div> <!- tl, br ->
+	<span>// three.js</span>
+	<img id="k" src='http://localhost:{{.}}/qr.kit.iop.red.png'/>
+</div>
+</body>
+</html>`
+
+		t, err := template.New("foo").Parse(fmt.Sprintf(`{{define "kit"}}%s{{end}}`, html))
+		if err != nil {
+			panic("undefined")
+		}
+		err = t.ExecuteTemplate(w, "kit", port)
+		if err != nil {
+			panic("undefined")
+		}
+
+	}
+
+	htmlHandler := func(w http.ResponseWriter, r *http.Request, filename string) {
+		fmt.Println("html", filename)
+
+		if filename == "qr.kit.iop.red" {
+			kitHandler(w, r)
+			return
+		}
+
+		type templateData struct {
+			Port     int
+			Filename string
+		}
+
+		htmlt := `
+<html>
+<!- kit ->
+<head>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+		div {
+			display: inline-grid;
+			grid-template-areas:
+				"r g b t"
+				"a k k k"
+				"d k k k"
+				"d k k k";
+			place-self: center;
+			// background-image: url('kit.png');
+			// background-repeat: no-repeat;
+		}
+		div > img {
+			mix-blend-mode: multiply;
+		}
+		div > iframe {
+			border: 0px;
+			grid-area: k;
+			mix-blend-mode: multiply;
+		}
+	</style>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<body>
+<div> <!- tl, br ->
+	<img src='http://localhost:{{.Port}}/kit.png'/>
+	<iframe src='http://localhost:{{.Port}}/{{.Filename}}'/>
+</div>
+</body>
+</html>`
+
+		t, err := template.New("foo").Parse(fmt.Sprintf(`{{define "kit"}}%s{{end}}`, htmlt))
+		if err != nil {
+			panic("undefined")
+		}
+		err = t.ExecuteTemplate(w, "kit", templateData{Port: port, Filename: filename})
+		if err != nil {
+			panic("undefined")
+		}
+
+	}
+
+	pngHandler := func(w http.ResponseWriter, r *http.Request, filename string) {
+		fmt.Println("png", filename)
+
+		qrCode, _ := qrcode.New(filename, qrcode.Low)
+		if err := qrCode.Write(11, w); err != nil {
+			fmt.Errorf("error creating qr code: %w\n", errors.WithStack(err))
+		}
 	}
 
 	http.HandleFunc(
 		"/",
 		func(w http.ResponseWriter, r *http.Request) {
+			path := r.URL.Path
 
-			//kit := fmt.Sprintf("http://localhost:%d", port)
+			paths := strings.Split(path, "/")
+			path = paths[len(paths)-1]
 
-			html := `
-		<html>
-		<head>
-			<style>
-				* {
-					margin: 0;
-					padding: 0;
-				}
-				div {
-					display: inline-grid;
-					grid-template-areas:
-						"r g b"
-						"t k k"
-						"d k k";
-					place-self: center;
-					background-image: src('kit.png');
-					background-repeat: no-repeat;
-				}
-				div > img {
-					mix-blend-mode: multiply;
-				}
-				div > iframe {
-					border: 0px;
-					grid-area: k;
-					mix-blend-mode: multiply;
-				}
-			</style>
-		</head>
-		<body>
-		<div> <!- tl, br ->
-			<img src='http://localhost:{{.}}/kit.iop.red.png'/>
-			<iframe src='http://localhost:{{.}}/kit.iop.red.qr'/>
-		</div>
-		</body>
-		</html>`
+			segments := strings.Split(path, ".")
 
-			t, err := template.New("foo").Parse(fmt.Sprintf(`{{define "kit"}}%s{{end}}`, html))
-			if err != nil {
-				panic("undefined")
-			}
-			err = t.ExecuteTemplate(w, "kit", port)
-			if err != nil {
-				panic("undefined")
+			filetype := segments[len(segments)-1]
+			filename := ""
+			if len(segments) == 1 {
+				filename = filetype
+				filetype = ""
+			} else {
+				filename = strings.Join(segments[:len(segments)-1], ".")
 			}
 
+			if filename == "" && filetype == "" {
+				filename = "kit.iop.red"
+			}
+
+			switch filetype {
+			case "ico":
+				fallthrough
+			case "png":
+				pngHandler(w, r, filename)
+			case "html":
+			default:
+				htmlHandler(w, r, filename)
+			}
 		},
 	)
 
-	http.HandleFunc(
-		"/kit.iop.red.qr",
-		func(w http.ResponseWriter, r *http.Request) {
-
-			//kit := fmt.Sprintf("http://localhost:%d", port)
-
-			html := `
-		<html>
-		<head>
-			<style>
-				* {
-					margin: 0;
-					padding: 0;
-				}
-				div {
-					display: inline-grid;
-					grid-template-rows: 33px 33px 33px;
-					grid-template-columns: 33px 33px 33px;
-					place-self: center;
-				}
-				div > * {
-					mix-blend-mode: multiply;
-				}
-				#k {
-					grid-column: 2;
-					grid-row: 2;
-					width: 66px;
-					height: 66px;
-				}
-				
-			</style>
-		</head>
-		<body>
-		<div> <!- tl, br ->
-			<img src='http://localhost:{{.}}/kit.iop.red.qr.png'/>
-			<img id="k" src='http://localhost:{{.}}/kit.png'/>
-			<img id="k" src='http://localhost:{{.}}/kit.iop.red.png'/>
-		</div>
-		</body>
-		</html>`
-
-			t, err := template.New("foo").Parse(fmt.Sprintf(`{{define "kit"}}%s{{end}}`, html))
-			if err != nil {
-				panic("undefined")
-			}
-			err = t.ExecuteTemplate(w, "kit", port)
-			if err != nil {
-				panic("undefined")
-			}
-
-		},
-	)
+	http.HandleFunc("/kit.iop.red", kitHandler)
 
 	http.HandleFunc("/qr.png", func(w http.ResponseWriter, r *http.Request) {
-		qrCode, _ := qrcode.New("qr", qrcode.Low)
-		if err := qrCode.Write(11, w); err != nil {
-			fmt.Errorf("error creating qr code: %w\n", errors.WithStack(err))
-		}
+		pngHandler(w, r, "qr.png")
 	})
 
 	http.HandleFunc("/kit.png", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "kit.png")
 	})
 
-	http.HandleFunc("/kit.qr.png", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "kit.qr.png")
+	http.HandleFunc("/kit.kat.png", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "kit.kat.png")
+	})
+
+	http.HandleFunc("/qr.kit.png", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "qr.kit.png")
 	})
 
 	http.HandleFunc("/kit.iop.red.png", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "kit.iop.red.png")
 	})
 
-	http.HandleFunc("/kit.iop.red.qr.png", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "kit.iop.red.qr.png")
+	http.HandleFunc("/qr.kit.iop.red.png", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "qr.kit.iop.red.png")
 	})
 
 	fmt.Println(kit.now())
