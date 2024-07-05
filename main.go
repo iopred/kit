@@ -210,6 +210,10 @@ func main() {
 		pngHandler(w, r, "qr.png")
 	})
 
+	http.HandleFunc("/qr.png", func(w http.ResponseWriter, r *http.Request) {
+		pngHandler(w, r, "qr.png")
+	})
+
 	http.HandleFunc("/kit.png", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "kit.png")
 	})
