@@ -17,6 +17,10 @@ jul 7 2024 {
     exposed kit to internet
 }
 
+july 31 2024 {
+    added `radius`, `center_x`, and `center_y` as parameters.
+}
+
 kit is a toolkit for making games
 
 this file is fun in kitvis
