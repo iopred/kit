@@ -49,7 +49,15 @@ func main() {
 		panic(fmt.Errorf("%w", errors.WithStack(err)))
 	}
 
-	port := 3242
+	port := 3264
+	host := "naa.mba"
+	filename := "ufo.png"
+
+	type templateData struct {
+		Host	 string
+		Port     int
+		Filename string
+	}
 
 	generateQR("localhost.png", fmt.Sprintf("http://localhost:%d/", port))
 
@@ -92,8 +100,8 @@ func main() {
 </head>
 <body>
 <div> <!- tl, br ->
-	<span>// three.js</span>
-	<img id="k" src='http://localhost:{{.}}/qr.kit.iop.red.png'/>
+	<img id="r" src='http://{{.Host}}:{{.Port}}/kit.png'/>
+	<img id="k" src='http://{{.Host}}:{{.Port}}/kit.png'/>
 </div>
 </body>
 </html>`
@@ -102,7 +110,7 @@ func main() {
 		if err != nil {
 			panic("undefined")
 		}
-		err = t.ExecuteTemplate(w, "kit", port)
+		err = t.ExecuteTemplate(w, "kit", templateData{Host: host, Port: port, Filename: filename})
 		if err != nil {
 			panic("undefined")
 		}
@@ -118,6 +126,7 @@ func main() {
 		}
 
 		type templateData struct {
+			Host	 string
 			Port     int
 			Filename string
 		}
@@ -155,8 +164,8 @@ func main() {
 </head>
 <body>
 <div> <!- tl, br ->
-	<img src='http://localhost:{{.Port}}/kit.png'/>
-	<iframe src='http://localhost:{{.Port}}/{{.Filename}}'/>
+	<img src='http://{{.Host}}:{{.Port}}/kit.png'/>
+	<iframe src='http://{{.Host}}:{{.Port}}/{{.Filename}}'/>
 </div>
 </body>
 </html>`
@@ -165,7 +174,7 @@ func main() {
 		if err != nil {
 			panic("undefined")
 		}
-		err = t.ExecuteTemplate(w, "kit", templateData{Port: port, Filename: filename})
+		err = t.ExecuteTemplate(w, "kit", templateData{Host: host, Port: port, Filename: filename})
 		if err != nil {
 			panic("undefined")
 		}
