@@ -163,8 +163,8 @@ func main() {
 </head>
 <body>
 <div> <!- tl, br ->
-	<img src='/qr.kit.png'/>
-	<iframe src='{{.Filename}}'/>
+	<img src='/{{.Filename}}.png'/>
+	<!-- <iframe src='/{{.Filename}}.html'/> -->
 </div>
 </body>
 </html>`
@@ -216,7 +216,11 @@ func main() {
 			case "ico":
 				fallthrough
 			case "png":
-				pngHandler(w, r, filename)
+				if strings.HasPrefix(filename, "qr.") {
+					pngHandler(w, r, "https://naa.mba/" + filename + ".png")
+				} else {
+					http.ServeFile(w, r, filename + ".png")
+				}
 			case "html":
 			default:
 				htmlHandler(w, r, filename)
@@ -224,54 +228,16 @@ func main() {
 		},
 	)
 
-	http.HandleFunc("/kit.iop.red", kitHandler)
-
-	http.HandleFunc("/qr.png", func(w http.ResponseWriter, r *http.Request) {
-		pngHandler(w, r, "qr.png")
-	})
-
-	http.HandleFunc("/kit.png", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "kit.png")
-	})
-
-	http.HandleFunc("/kit.kat.png", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "kit.kat.png")
-	})
-
-	http.HandleFunc("/qr.kit.png", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "qr.kit.png")
-	})
-
-	http.HandleFunc("/kit.iop.red.png", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "kit.iop.red.png")
-	})
-
-	http.HandleFunc("/qr.kit.iop.red.png", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "qr.kit.iop.red.png")
-	})
-	
-	http.HandleFunc("/qr.description.kit.png", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "qr.description.kit.png")
-	})
-
 	http.HandleFunc("/ufo.naa.mba", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "qr.ufo.naa.mba.png")
+		htmlHandler(w, r, "ufo.naa.mba")
 	})
 
 	http.HandleFunc("/naa.mba", func(w http.ResponseWriter, r *http.Request) {
-		htmlHandler(w, r, "naa.mba.png")
-	})
-
-	http.HandleFunc("/naa.mba.png", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "naa.mba.png")
+		htmlHandler(w, r, "naa.mba")
 	})
 
 	http.HandleFunc("/ufo", func(w http.ResponseWriter, r *http.Request) {
-		htmlHandler(w, r, "ufo.png")
-	})
-
-	http.HandleFunc("/ufo.png", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "ufo.png")
+		htmlHandler(w, r, "ufo")
 	})
 
 	fmt.Println(kit.now())
