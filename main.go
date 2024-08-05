@@ -251,7 +251,11 @@ func main() {
 	})
 
 	http.HandleFunc("/naa.mba", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "qr.naa.mba.png")
+		http.ServeFile(w, r, "naa.mba.png")
+	})
+
+	http.HandleFunc("/ufo", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "ufo.png")
 	})
 
 	fmt.Println(kit.now())
