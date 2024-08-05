@@ -49,7 +49,7 @@ func main() {
 		panic(fmt.Errorf("%w", errors.WithStack(err)))
 	}
 
-	port := 3264
+	port := 3242
 	host := "naa.mba"
 	filename := "ufo.png"
 
@@ -100,8 +100,7 @@ func main() {
 </head>
 <body>
 <div> <!- tl, br ->
-	<img id="r" src='http://{{.Host}}:{{.Port}}/kit.png'/>
-	<img id="k" src='http://{{.Host}}:{{.Port}}/kit.png'/>
+	<img id="r" src='/kit.png'/>
 </div>
 </body>
 </html>`
@@ -164,8 +163,8 @@ func main() {
 </head>
 <body>
 <div> <!- tl, br ->
-	<img src='http://{{.Host}}:{{.Port}}/kit.png'/>
-	<iframe src='http://{{.Host}}:{{.Port}}/{{.Filename}}'/>
+	<img src='/qr.kit.png'/>
+	<iframe src='{{.Filename}}'/>
 </div>
 </body>
 </html>`
@@ -260,10 +259,18 @@ func main() {
 	})
 
 	http.HandleFunc("/naa.mba", func(w http.ResponseWriter, r *http.Request) {
+		htmlHandler(w, r, "naa.mba.png")
+	})
+
+	http.HandleFunc("/naa.mba.png", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "naa.mba.png")
 	})
 
 	http.HandleFunc("/ufo", func(w http.ResponseWriter, r *http.Request) {
+		htmlHandler(w, r, "ufo.png")
+	})
+
+	http.HandleFunc("/ufo.png", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "ufo.png")
 	})
 
