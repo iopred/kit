@@ -37,6 +37,10 @@ func main() {
 		if err := generateQR("qr.description.kit.png", "there is a yellow smiley face with a big smile on it"); err != nil {
 			fmt.Errorf("%w", errors.WithStack(err))
 		}
+		
+		if err := generateQR("qr.ufo.naa.mba.png", "https://ufo.naa.mba"); err != nil {
+			fmt.Errorf("%w", errors.WithStack(err))
+		}
 	} else {
 		panic(fmt.Errorf("%w", errors.WithStack(err)))
 	}
@@ -236,6 +240,10 @@ func main() {
 	
 	http.HandleFunc("/qr.description.kit.png", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "qr.description.kit.png")
+	})
+
+	http.HandleFunc("/ufo.naa.mba", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "qr.ufo.naa.mba.png")
 	})
 
 	fmt.Println(kit.now())
