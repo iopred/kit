@@ -81,7 +81,7 @@ func main() {
 <body>
 <div> <!- tl, br ->
 	<span>// three.js</span>
-	<img id="k" src='http://localhost:{{.}}/qr.kit.iop.red.png'/>
+	<img id="k" src='http://kit.iop.red/qr.kit.iop.red.png'/>
 </div>
 </body>
 </html>`
@@ -143,8 +143,8 @@ func main() {
 </head>
 <body>
 <div> <!- tl, br ->
-	<img src='http://localhost:{{.Port}}/kit.png'/>
-	<iframe src='http://localhost:{{.Port}}/{{.Filename}}'/>
+	<img src='http://kit.iop.red/kit.png'/>
+	<iframe src='http://kit.iop.red/{{.Filename}}'/>
 </div>
 </body>
 </html>`
@@ -205,10 +205,6 @@ func main() {
 	)
 
 	http.HandleFunc("/kit.iop.red", kitHandler)
-
-	http.HandleFunc("/qr.png", func(w http.ResponseWriter, r *http.Request) {
-		pngHandler(w, r, "qr.png")
-	})
 
 	http.HandleFunc("/qr.png", func(w http.ResponseWriter, r *http.Request) {
 		pngHandler(w, r, "qr.png")
