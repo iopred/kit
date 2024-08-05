@@ -1,4 +1,4 @@
-module kit
+module qr.kit
 
 go 1.18
 

@@ -162,7 +162,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
             choice.index, choice.message.role, choice.message.content
         );
         // Write the content to the named pipe
-        writeln!(file, "{}", choice.message.content)?;
+        writeln!(file, "{:?}", choice.message.content)?;
     }
 
     // Your main function logic here

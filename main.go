@@ -14,23 +14,27 @@ import (
 func main() {
 	var kit Node
 	if kit, err := loadKit(); err == nil {
-		if err := generateQR("qr.kit.png", "kit.iop.red"); err != nil {
+		if err := generateQR("qr.kit.png", "https://kit.iop.red"); err != nil {
 			fmt.Errorf("%w", errors.WithStack(err))
 		}
 
-		if err := generateQR("qr.r.png", "kit.iop.red/r"); err != nil {
+		if err := generateQR("qr.r.png", "https://kit.iop.red/r"); err != nil {
 			fmt.Errorf("%w", errors.WithStack(err))
 		}
 
-		if err := generateQR("qr.g.png", "qr.kit.iop.red./"+kit.now()); err != nil {
+		if err := generateQR("qr.g.png", "https://qr.kit.iop.red./"+kit.now()); err != nil {
 			fmt.Errorf("%w", errors.WithStack(err))
 		}
 
-		if err := generateQR("qr.t.png", "http://qr.kit.iop.red./"+kit.next()); err != nil {
+		if err := generateQR("qr.t.png", "https://qr.kit.iop.red./"+kit.next()); err != nil {
 			fmt.Errorf("%w", errors.WithStack(err))
 		}
 
-		if err := generateQR("qr.kit.iop.red.png", "http://localhost:3242/qr.kit.iop.red"); err != nil {
+		if err := generateQR("qr.kit.iop.red.png", "https://kit.iop.red:3242/qr.kit.iop.red"); err != nil {
+			fmt.Errorf("%w", errors.WithStack(err))
+		}
+
+		if err := generateQR("qr.description.kit.png", "there is a yellow smiley face with a big smile on it"); err != nil {
 			fmt.Errorf("%w", errors.WithStack(err))
 		}
 	} else {
@@ -210,10 +214,6 @@ func main() {
 		pngHandler(w, r, "qr.png")
 	})
 
-	http.HandleFunc("/qr.png", func(w http.ResponseWriter, r *http.Request) {
-		pngHandler(w, r, "qr.png")
-	})
-
 	http.HandleFunc("/kit.png", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "kit.png")
 	})
@@ -232,6 +232,10 @@ func main() {
 
 	http.HandleFunc("/qr.kit.iop.red.png", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "qr.kit.iop.red.png")
+	})
+	
+	http.HandleFunc("/qr.description.kit.png", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "qr.description.kit.png")
 	})
 
 	fmt.Println(kit.now())

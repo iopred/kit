@@ -1,0 +1,1 @@
+docker compose up --build kit qr.kit

@@ -1,147 +1,305 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"kit/kit"
+	"net/http"
 	"os"
+	"strings"
+	"text/template"
 
-	"github.com/alecthomas/participle/v2"
 	"github.com/pkg/errors"
 	"github.com/skip2/go-qrcode"
 )
 
-func spectrum() kit.System {
-	k := kit.New()
-	n := kit.Node{
-		T:      2022,
-		Dvalue: 7950000000,
-		Name:   "people",
-	}
-	k.AddNode(n)
-
-	start := k.Next(0).Node("people")
-
-	if start.Value < 0 {
-		panic("no people")
-	}
-
-	k.AddNode(kit.Node{
-		Dt:     1,
-		Dvalue: 1,
-		Name:   "spectrum",
-	})
-
-	return k
-}
-
-func tunnel(s kit.System) (kit.System, error) {
-	start := s.Next(0).Node("people")
-	end := s.Next(1).Node("people")
-
-	if start.Value < 0 || end.Value < 0 {
-		panic("no people")
-	}
-
-	k := s.Next(1)
-	k.AddNode(kit.Node{
-		Dt:   1,
-		Name: "input",
-	})
-	k.AddNode(kit.Node{
-		T:    1,
-		Dt:   -1,
-		Name: "output",
-	})
-	return k, nil
-}
-
 func main() {
-	k := spectrum()
-	fmt.Println("spectrum")
-	fmt.Println(k.Next(0).Node("spectrum"))
-	fmt.Println(k.Next(0.25).Node("spectrum"))
-	fmt.Println(k.Next(0.5).Node("spectrum"))
-	fmt.Println(k.Next(0.75).Node("spectrum"))
-	fmt.Println(k.Next(1).Node("spectrum"))
+	var kit Node
+	if kit, err := loadKit(); err == nil {
+		if err := generateQR("qr.kit.png", "https://kit.iop.red"); err != nil {
+			fmt.Errorf("%w", errors.WithStack(err))
+		}
 
-	t, err := tunnel(k)
-	if err != nil {
-		return
-	}
-	fmt.Println("tunnel")
-	fmt.Println(t.Next(0).Node("output"))
-	fmt.Println(t.Next(0.5).Node("output"))
-	fmt.Println(t.Next(1).Node("output"))
+		if err := generateQR("qr.r.png", "https://kit.iop.red/r"); err != nil {
+			fmt.Errorf("%w", errors.WithStack(err))
+		}
 
-	// fmt.Println(kit(system()))
+		if err := generateQR("qr.g.png", "https://qr.kit.iop.red./"+kit.now()); err != nil {
+			fmt.Errorf("%w", errors.WithStack(err))
+		}
 
-	if err := loadKit(); err != nil {
+		if err := generateQR("qr.t.png", "https://qr.kit.iop.red./"+kit.next()); err != nil {
+			fmt.Errorf("%w", errors.WithStack(err))
+		}
+
+		if err := generateQR("qr.kit.iop.red.png", "https://kit.iop.red:3242/qr.kit.iop.red"); err != nil {
+			fmt.Errorf("%w", errors.WithStack(err))
+		}
+	} else {
 		panic(fmt.Errorf("%w", errors.WithStack(err)))
 	}
 
-	if err := generateQR("qr.png", "https://burymewithmymoney.com"); err != nil {
-		panic(fmt.Errorf("%w", errors.WithStack(err)))
+	port := 3242
+
+	generateQR("localhost.png", fmt.Sprintf("http://localhost:%d/", port))
+
+	if err := generateQR("localhost.qr.kit.png", fmt.Sprintf("http://localhost:%d/qr.kit", port)); err != nil {
+		fmt.Errorf("%w", errors.WithStack(err))
 	}
 
+	kitHandler := func(w http.ResponseWriter, r *http.Request) {
+		html := `
+<html>
+<head>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+		div {
+			display: inline-grid;
+			grid-template-areas:
+				"r g b t"
+				"a k k k"
+				"d k k k"
+				"d k k k";
+			place-self: center;
+			// background-image: url('kit.png');
+			// background-repeat: no-repeat;
+		}
+		div > * {
+			mix-blend-mode: multiply;
+		}
+		span,
+		iframe {
+			border: 0px;
+		}
+		#k {
+			grid-area: k;
+		}
+	</style>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<body>
+<div> <!- tl, br ->
+	<span>// three.js</span>
+	<img id="k" src='http://localhost:{{.}}/qr.kit.iop.red.png'/>
+</div>
+</body>
+</html>`
+
+		t, err := template.New("foo").Parse(fmt.Sprintf(`{{define "kit"}}%s{{end}}`, html))
+		if err != nil {
+			panic("undefined")
+		}
+		err = t.ExecuteTemplate(w, "kit", port)
+		if err != nil {
+			panic("undefined")
+		}
+
+	}
+
+	htmlHandler := func(w http.ResponseWriter, r *http.Request, filename string) {
+		fmt.Println("html", filename)
+
+		if filename == "qr.kit.iop.red" {
+			kitHandler(w, r)
+			return
+		}
+
+		type templateData struct {
+			Port     int
+			Filename string
+		}
+
+		htmlt := `
+<html>
+<!- kit ->
+<head>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+		div {
+			display: inline-grid;
+			grid-template-areas:
+				"r g b t"
+				"a k k k"
+				"d k k k"
+				"d k k k";
+			place-self: center;
+			// background-image: url('kit.png');
+			// background-repeat: no-repeat;
+		}
+		div > img {
+			mix-blend-mode: multiply;
+		}
+		div > iframe {
+			border: 0px;
+			grid-area: k;
+			mix-blend-mode: multiply;
+		}
+	</style>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<body>
+<div> <!- tl, br ->
+	<img src='http://localhost:{{.Port}}/kit.png'/>
+	<iframe src='http://localhost:{{.Port}}/{{.Filename}}'/>
+</div>
+</body>
+</html>`
+
+		t, err := template.New("foo").Parse(fmt.Sprintf(`{{define "kit"}}%s{{end}}`, htmlt))
+		if err != nil {
+			panic("undefined")
+		}
+		err = t.ExecuteTemplate(w, "kit", templateData{Port: port, Filename: filename})
+		if err != nil {
+			panic("undefined")
+		}
+
+	}
+
+	pngHandler := func(w http.ResponseWriter, r *http.Request, filename string) {
+		fmt.Println("png", filename)
+
+		qrCode, _ := qrcode.New(filename, qrcode.Low)
+		if err := qrCode.Write(11, w); err != nil {
+			fmt.Errorf("error creating qr code: %w\n", errors.WithStack(err))
+		}
+	}
+
+	http.HandleFunc(
+		"/",
+		func(w http.ResponseWriter, r *http.Request) {
+			path := r.URL.Path
+
+			paths := strings.Split(path, "/")
+			path = paths[len(paths)-1]
+
+			segments := strings.Split(path, ".")
+
+			filetype := segments[len(segments)-1]
+			filename := ""
+			if len(segments) == 1 {
+				filename = filetype
+				filetype = ""
+			} else {
+				filename = strings.Join(segments[:len(segments)-1], ".")
+			}
+
+			if filename == "" && filetype == "" {
+				filename = "kit.iop.red"
+			}
+
+			switch filetype {
+			case "ico":
+				fallthrough
+			case "png":
+				pngHandler(w, r, filename)
+			case "html":
+			default:
+				htmlHandler(w, r, filename)
+			}
+		},
+	)
+
+	http.HandleFunc("/kit.iop.red", kitHandler)
+
+	http.HandleFunc("/qr.png", func(w http.ResponseWriter, r *http.Request) {
+		pngHandler(w, r, "qr.png")
+	})
+
+	http.HandleFunc("/qr.png", func(w http.ResponseWriter, r *http.Request) {
+		pngHandler(w, r, "qr.png")
+	})
+
+	http.HandleFunc("/kit.png", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "kit.png")
+	})
+
+	http.HandleFunc("/kit.kat.png", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "kit.kat.png")
+	})
+
+	http.HandleFunc("/qr.kit.png", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "qr.kit.png")
+	})
+
+	http.HandleFunc("/kit.iop.red.png", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "kit.iop.red.png")
+	})
+
+	http.HandleFunc("/qr.kit.iop.red.png", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "qr.kit.iop.red.png")
+	})
+
+	fmt.Println(kit.now())
+
+	err := http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
+	if errors.Is(err, http.ErrServerClosed) {
+		fmt.Errorf("server closed\n")
+	} else if err != nil {
+		fmt.Errorf("error starting server: %w\n", errors.WithStack(err))
+		os.Exit(1)
+	}
+
+	fmt.Println("exiting")
 }
 
 func generateQR(filename, url string) error {
 	qrCode, _ := qrcode.New(url, qrcode.Medium)
-	err := qrCode.WriteFile(256, filename)
+	err := qrCode.WriteFile(11, filename)
 	if err != nil {
 		return fmt.Errorf("%w", errors.WithStack(err))
 	}
-	return nil
-}
-
-type INI struct {
-	Time       int
-	Dimensions []*Node `@@*`
-}
-
-type Dimension struct {
-	Identifier string  `"[" @Ident "]"`
-	Nodes      []*Node `@@*`
-}
-
-type Boolean bool
-
-func (b *Boolean) Capture(values []string) error {
-	*b = values[0] == "true"
 	return nil
 }
 
 type Node struct {
-	Name    *string  `@Ident {}`
-	X       bool     `@"?"?`
-	Y       bool     `@"?"?`
-	Z       bool     `@"?"?`
-	Gravity *Boolean `| @("true" | "false")`
-	Nodes   []*Node  `@@*`
+	X       bool
+	Y       bool
+	Z       bool
+	Gravity bool
+	Nodes   byte
 }
 
-func loadKit() error {
-	parser, err := participle.Build[INI]()
-	if err != nil {
-		return fmt.Errorf("%w", errors.WithStack(err))
+func (n Node) x() string {
+	if n.X {
+		return "1"
 	}
+	return "0"
+}
 
-	file, err := os.Open("kit.kit")
-	if err != nil {
-		return fmt.Errorf("%w", errors.WithStack(err))
+func (n Node) y() string {
+	if n.Y {
+		return "1"
 	}
+	return "0"
+}
 
-	r := bufio.NewReader(file)
+func (n Node) z() string {
+	if n.Z {
+		return "1"
+	}
+	return "0"
+}
 
-	ast, err := parser.Parse("kit.kit", r)
-	// ast == &INI{
-	//   Properties: []*Property{
-	//     {Key: "People", Value: &Value{Int: &8,118,913,601}},
-	//   },
-	// }
+func (n Node) g() string {
+	if n.Gravity {
+		return "1"
+	}
+	return "0"
+}
 
-	fmt.Println(ast)
+func (n Node) now() string {
+	return "0009"
+}
 
-	return err
+func (n Node) next() string {
+	return "🌞"
+}
+
+func loadKit() (Node, error) {
+	return Node{false, false, false, true, 0001}, nil
 }
