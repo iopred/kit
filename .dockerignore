@@ -1,0 +1,32 @@
+# Ignore target directory for Rust
+/target
+
+# Ignore the build directory for Go (if exists)
+/bin
+/pkg
+
+# Ignore any logs
+*.log
+
+# Ignore the .env file if you don't want it included (uncomment if needed)
+# .env
+
+# Ignore git repository files
+.git
+.gitignore
+
+# Ignore Dockerfile and docker-compose files
+Dockerfile*
+docker-compose*
+
+# Ignore node_modules (if there's any frontend or other JS dependencies)
+/node_modules
+
+# Ignore any OS or IDE specific files
+.DS_Store
+*.swp
+.idea/
+.vscode/
+
+# Ignore Go test outputs
+*.out
