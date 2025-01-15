@@ -134,8 +134,8 @@ func main() {
 </head>
 <body>
 <div> <!-- tl, br -->
-	<img src='/qr.{{.Filename}}.png'/>
 	<iframe src='{{.Filename}}.png'/>
+	<img src='/qr.{{.Filename}}.png'/>
 </div>
 </body>
 </html>`
