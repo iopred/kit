@@ -14,7 +14,7 @@ import (
 func main() {
 	var kit Node
 	if kit, err := loadKit(); err == nil {
-		
+		kit.now();	
 	} else {
 		panic(fmt.Errorf("%w", errors.WithStack(err)))
 	}
