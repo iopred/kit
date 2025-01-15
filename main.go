@@ -77,7 +77,7 @@ func main() {
 			panic("undefined")
 		}
 
-		err = t.ExecuteTemplate(w, "kit", templateData{Host: host, Port: port, Filename: filename})
+		err = t.ExecuteTemplate(w, "kit", templateData{Host: host, Port: port, Filename: filename, URL: filename})
 		if err != nil {
 			panic("undefined")
 		}
