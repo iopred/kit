@@ -63,7 +63,7 @@ func main() {
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
 <body>
-<div> <!-- tl, br -->
+<div> <!-- r, g, b -->
 	<img id="r" src="http://{{.Host}}:{{.Port}}/r.png">
 	<span>// three.js</span>
 	<img id="k" src='http://{{.Host}}:{{.Port}}/qr.kit.iop.red.png'/>
@@ -99,7 +99,7 @@ func main() {
 
 		htmlt := `
 <html>
-<!- kit ->
+<!-- kit -->
 <head>
 	<style>
 		* {
@@ -134,8 +134,8 @@ func main() {
 </head>
 <body>
 <div> <!-- tl, br -->
-	<iframe src='{{.Filename}}.png'/>
 	<img src='/qr.{{.Filename}}.png'/>
+	<iframe src='{{.Filename}}.png'/>
 </div>
 </body>
 </html>`
