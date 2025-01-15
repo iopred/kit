@@ -27,6 +27,7 @@ func main() {
 		Host     string
 		Port     int
 		Filename string
+		URL	     string
 	}
 
 	kitHandler := func(w http.ResponseWriter, r *http.Request) {
