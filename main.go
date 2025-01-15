@@ -134,7 +134,7 @@ func main() {
 </head>
 <body>
 <div> <!-- tl, br -->
-	<iframe src='{{.Filename}}.png'></iframe>
+	<iframe src='{{.URL}}'></iframe>
 	<img src='/qr.{{.Filename}}.png'/>
 </div>
 </body>
@@ -144,7 +144,26 @@ func main() {
 		if err != nil {
 			panic("undefined")
 		}
-		err = t.ExecuteTemplate(w, "kit", templateData{Host: host, Port: port, Filename: filename})
+
+		url := filename
+		switch (filename) {
+		case "heliattack":
+			url = "https://heliattack.com"
+		case: "ufo.naa.mba":
+			url = "https://ufo.naa.mba"
+		case: "naa.mba":
+			url = "https://naa.mba"
+		case: "ufo":
+			url = "https://ufo.naa.mba"
+		case: "the.keeper":
+			url = "https://www.keeperproject.com.au"
+		case: "bad.habit":
+			url = "https://badhabitrecords.com.au"
+		case: "the.presynct":
+			url = "https://www.thepresynct.com.au"
+		}
+
+		err = t.ExecuteTemplate(w, "kit", templateData{Host: host, Port: port, Filename: filename, URL: url})
 		if err != nil {
 			panic("undefined")
 		}
