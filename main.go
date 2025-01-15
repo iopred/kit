@@ -128,8 +128,8 @@ func main() {
 
 		img {
 			position: absolute;
-			right: 10px;
-			bottom: 10px;
+			right: 0px;
+			bottom: 0px;
 		}
 	</style>
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -137,7 +137,7 @@ func main() {
 <body>
 <div> <!-- tl, br -->
 	<iframe src='{{.URL}}'></iframe>
-	<a href="{{.URL}}"><img src='/{{.Filename}}.png' id="qr"/></a>
+	<a href="{{.URL}}" target="_blank"><img src='/{{.Filename}}.png' id="qr"/></a>
 </div>
 </body>
 </html>`
@@ -166,6 +166,8 @@ func main() {
 			url = "https://badhabitrecords.com.au"
 		case "the.presynct":
 			url = "https://www.thepresynct.com.au"
+		case "naamba":
+			url = "https://naa.mba"
 		}
 
 		err = t.ExecuteTemplate(w, "kit", templateData{Host: host, Port: port, Filename: filename, URL: url})
