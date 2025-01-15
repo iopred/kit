@@ -96,6 +96,7 @@ func main() {
 			Host     string
 			Port     int
 			Filename string
+			URL	     string
 		}
 
 		htmlt := `
