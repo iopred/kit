@@ -154,6 +154,8 @@ func main() {
 	pngHandler := func(w http.ResponseWriter, r *http.Request, filename string) {
 		fmt.Println("png", filename)
 
+		filename = strings.Trim(filename, ".png")
+
 		qrCode, _ := qrcode.New(filename, qrcode.Low)
 		if err := qrCode.Write(11, w); err != nil {
 			fmt.Errorf("error creating qr code: %w\n", errors.WithStack(err))
