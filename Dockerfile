@@ -1,5 +1,5 @@
 # First stage: Build the Rust application
-FROM rust:1.70 as kit_builder
+FROM rust:1.83 as kit_builder
 
 WORKDIR /usr/src/kit
 
@@ -38,7 +38,6 @@ COPY --from=qr_kit_builder /qr.kit /usr/local/bin/qr.kit
 
 # Expose a port for the Go application (if needed)
 EXPOSE 3242
-EXPOSE 80
 
 # Ensure the binaries are executable
 RUN chmod +x /usr/local/bin/kit /usr/local/bin/qr.kit

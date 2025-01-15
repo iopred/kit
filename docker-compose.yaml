@@ -4,7 +4,7 @@ services:
     restart: always
     shm_size: 128mb
     environment:
-      POSTGRES_PASSWORD: k1t
+      POSTGRES_PASSWORD: k1tw1llN3V3Rb3ar3al1ty!
 
   adminer:
     image: adminer

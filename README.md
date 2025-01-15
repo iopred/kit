@@ -1,3 +1,10 @@
+# poem
+
+*In code's embrace, where logic flows,  
+A symphony of syntax grows,  
+Rust's sturdy arms cradle our dreams,  
+In tangled lines, creation beams.*
+
 # kit
 
 oct 23 -> nov 1 -> {
@@ -21,12 +28,19 @@ july 31 2024 {
     added `radius`, `center_x`, and `center_y` as parameters.
 }
 
+aug 08 2024 {
+    
+}
+
+#iop
+
 kit is a toolkit for making games
 
 this file is fun in kitvis
 
+#red
 
-
+<!-- CAPTCHA -->
 
 
 
