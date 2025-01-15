@@ -14,39 +14,23 @@ import (
 func main() {
 	var kit Node
 	if kit, err := loadKit(); err == nil {
-		if err := generateQR("qr.kit.png", "https://kit.iop.red"); err != nil {
+		if err := generateQR("qr.kit.png", "kit.iop.red"); err != nil {
 			fmt.Errorf("%w", errors.WithStack(err))
 		}
 
-		if err := generateQR("qr.r.png", "https://kit.iop.red/r"); err != nil {
+		if err := generateQR("qr.r.png", "kit.iop.red/r"); err != nil {
 			fmt.Errorf("%w", errors.WithStack(err))
 		}
 
-		if err := generateQR("qr.g.png", "https://qr.kit.iop.red./"+kit.now()); err != nil {
+		if err := generateQR("qr.g.png", "qr.kit.iop.red./"+kit.now()); err != nil {
 			fmt.Errorf("%w", errors.WithStack(err))
 		}
 
-		if err := generateQR("qr.t.png", "https://qr.kit.iop.red./"+kit.next()); err != nil {
+		if err := generateQR("qr.t.png", "http://qr.kit.iop.red./"+kit.next()); err != nil {
 			fmt.Errorf("%w", errors.WithStack(err))
 		}
 
-		if err := generateQR("qr.kit.iop.red.png", "https://kit.iop.red:3242/qr.kit.iop.red"); err != nil {
-			fmt.Errorf("%w", errors.WithStack(err))
-		}
-
-		if err := generateQR("qr.description.kit.png", "there is a yellow smiley face with a big smile on it"); err != nil {
-			fmt.Errorf("%w", errors.WithStack(err))
-		}
-		
-		if err := generateQR("qr.ufo.naa.mba.png", "https://ufo.naa.mba"); err != nil {
-			fmt.Errorf("%w", errors.WithStack(err))
-		}
-
-		if err := generateQR("qr.naa.mba.png", "https://naa.mba"); err != nil {
-			fmt.Errorf("%w", errors.WithStack(err))
-		}
-
-		if err := generateQR("qr.the.keeper.png", "https://www.keeperproject.com.au/"); err != nil {
+		if err := generateQR("qr.kit.iop.red.png", "http://localhost:3242/qr.kit.iop.red"); err != nil {
 			fmt.Errorf("%w", errors.WithStack(err))
 		}
 	} else {
@@ -54,14 +38,6 @@ func main() {
 	}
 
 	port := 3242
-	host := "naa.mba"
-	filename := "ufo.png"
-
-	type templateData struct {
-		Host	 string
-		Port     int
-		Filename string
-	}
 
 	generateQR("localhost.png", fmt.Sprintf("http://localhost:%d/", port))
 
@@ -104,7 +80,8 @@ func main() {
 </head>
 <body>
 <div> <!- tl, br ->
-	<img id="r" src='/kit.png'/>
+	<span>// three.js</span>
+	<img id="k" src='http://kit.iop.red/qr.kit.iop.red.png'/>
 </div>
 </body>
 </html>`
@@ -113,7 +90,7 @@ func main() {
 		if err != nil {
 			panic("undefined")
 		}
-		err = t.ExecuteTemplate(w, "kit", templateData{Host: host, Port: port, Filename: filename})
+		err = t.ExecuteTemplate(w, "kit", port)
 		if err != nil {
 			panic("undefined")
 		}
@@ -129,7 +106,6 @@ func main() {
 		}
 
 		type templateData struct {
-			Host	 string
 			Port     int
 			Filename string
 		}
@@ -167,8 +143,8 @@ func main() {
 </head>
 <body>
 <div> <!- tl, br ->
-	<img src='/{{.Filename}}.png'/>
-	<!-- <iframe src='/{{.Filename}}.html'/> -->
+	<img src='http://kit.iop.red/kit.png'/>
+	<iframe src='http://kit.iop.red/{{.Filename}}'/>
 </div>
 </body>
 </html>`
@@ -177,7 +153,7 @@ func main() {
 		if err != nil {
 			panic("undefined")
 		}
-		err = t.ExecuteTemplate(w, "kit", templateData{Host: host, Port: port, Filename: filename})
+		err = t.ExecuteTemplate(w, "kit", templateData{Port: port, Filename: filename})
 		if err != nil {
 			panic("undefined")
 		}
@@ -220,11 +196,7 @@ func main() {
 			case "ico":
 				fallthrough
 			case "png":
-				if strings.HasPrefix(filename, "qr.") {
-					pngHandler(w, r, "https://naa.mba/" + filename + ".png")
-				} else {
-					http.ServeFile(w, r, filename + ".png")
-				}
+				pngHandler(w, r, filename)
 			case "html":
 			default:
 				htmlHandler(w, r, filename)
@@ -232,22 +204,31 @@ func main() {
 		},
 	)
 
-	http.HandleFunc("/ufo.naa.mba", func(w http.ResponseWriter, r *http.Request) {
-		htmlHandler(w, r, "ufo.naa.mba")
+	http.HandleFunc("/kit.iop.red", kitHandler)
+
+	http.HandleFunc("/qr.png", func(w http.ResponseWriter, r *http.Request) {
+		pngHandler(w, r, "qr.png")
 	})
 
-	http.HandleFunc("/naa.mba", func(w http.ResponseWriter, r *http.Request) {
-		htmlHandler(w, r, "naa.mba")
+	http.HandleFunc("/kit.png", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "kit.png")
 	})
 
-	http.HandleFunc("/ufo", func(w http.ResponseWriter, r *http.Request) {
-		htmlHandler(w, r, "ufo")
+	http.HandleFunc("/kit.kat.png", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "kit.kat.png")
 	})
 
-	http.HandleFunc("/the.keeper", func(w http.ResponseWriter, r *http.Request) {
-		htmlHandler(w, r, "the.keeper")
+	http.HandleFunc("/qr.kit.png", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "qr.kit.png")
 	})
 
+	http.HandleFunc("/kit.iop.red.png", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "kit.iop.red.png")
+	})
+
+	http.HandleFunc("/qr.kit.iop.red.png", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "qr.kit.iop.red.png")
+	})
 
 	fmt.Println(kit.now())
 
