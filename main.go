@@ -151,6 +151,8 @@ func main() {
 		switch filename {
 		case "heliattack":
 			url = "https://heliattack.com"
+		case "ha2000":
+			url = "https://heliattack.com/game"
 		case "ufo.naa.mba":
 			url = "https://ufo.naa.mba"
 		case "naa.mba":
