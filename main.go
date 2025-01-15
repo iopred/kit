@@ -146,20 +146,20 @@ func main() {
 		}
 
 		url := filename
-		switch (filename) {
+		switch filename {
 		case "heliattack":
 			url = "https://heliattack.com"
-		case: "ufo.naa.mba":
+		case "ufo.naa.mba":
 			url = "https://ufo.naa.mba"
-		case: "naa.mba":
+		case "naa.mba":
 			url = "https://naa.mba"
-		case: "ufo":
+		case "ufo":
 			url = "https://ufo.naa.mba"
-		case: "the.keeper":
+		case "the.keeper":
 			url = "https://www.keeperproject.com.au"
-		case: "bad.habit":
+		case "bad.habit":
 			url = "https://badhabitrecords.com.au"
-		case: "the.presynct":
+		case "the.presynct":
 			url = "https://www.thepresynct.com.au"
 		}
 
