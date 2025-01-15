@@ -14,61 +14,7 @@ import (
 func main() {
 	var kit Node
 	if kit, err := loadKit(); err == nil {
-		if err := generateQR("qr.kit.png", "https://kit.iop.red"); err != nil {
-			fmt.Errorf("%w", errors.WithStack(err))
-		}
-
-		if err := generateQR("qr.k.png", "kit.iop.red/k"); err != nil {
-			fmt.Errorf("%w", errors.WithStack(err))
-		}
-
-		if err := generateQR("qr.i.png", "kit.iop.red/i"); err != nil {
-			fmt.Errorf("%w", errors.WithStack(err))
-		}
-
-		if err := generateQR("qr.t.png", "kit.iop.red/t"); err != nil {
-			fmt.Errorf("%w", errors.WithStack(err))
-		}
-
-		if err := generateQR("qr.21.png", "kit.iop.red/21"); err != nil {
-			fmt.Errorf("%w", errors.WithStack(err))
-		}
-
-		if err := generateQR("qr.81.21.png", "kit.iop.red/81.21"); err != nil {
-			fmt.Errorf("%w", errors.WithStack(err))
-		}
-
-		if err := generateQR("qr.r.png", "kit.iop.red/r"); err != nil {
-			fmt.Errorf("%w", errors.WithStack(err))
-		}
-
-		if err := generateQR("qr.g.png", "https://qr.kit.iop.red./"+kit.now()); err != nil {
-			fmt.Errorf("%w", errors.WithStack(err))
-		}
-
-		if err := generateQR("qr.t.png", "https://qr.kit.iop.red./"+kit.next()); err != nil {
-			fmt.Errorf("%w", errors.WithStack(err))
-		}
-
-		if err := generateQR("qr.kit.iop.red.png", "https://kit.iop.red:3242/qr.kit.iop.red"); err != nil {
-			fmt.Errorf("%w", errors.WithStack(err))
-		}
-
-		if err := generateQR("qr.description.kit.png", "there is a yellow smiley face with a big smile on it"); err != nil {
-			fmt.Errorf("%w", errors.WithStack(err))
-		}
-
-		if err := generateQR("qr.ufo.naa.mba.png", "https://ufo.naa.mba"); err != nil {
-			fmt.Errorf("%w", errors.WithStack(err))
-		}
-
-		if err := generateQR("qr.naa.mba.png", "https://naa.mba"); err != nil {
-			fmt.Errorf("%w", errors.WithStack(err))
-		}
-
-		if err := generateQR("qr.the.keeper.png", "https://www.keeperproject.com.au/"); err != nil {
-			fmt.Errorf("%w", errors.WithStack(err))
-		}
+		
 	} else {
 		panic(fmt.Errorf("%w", errors.WithStack(err)))
 	}
@@ -81,12 +27,6 @@ func main() {
 		Host     string
 		Port     int
 		Filename string
-	}
-
-	generateQR("localhost.png", fmt.Sprintf("http://localhost:%d/", port))
-
-	if err := generateQR("localhost.qr.kit.png", fmt.Sprintf("http://localhost:%d/qr.kit", port)); err != nil {
-		fmt.Errorf("%w", errors.WithStack(err))
 	}
 
 	kitHandler := func(w http.ResponseWriter, r *http.Request) {
@@ -123,7 +63,7 @@ func main() {
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
 <body>
-<div> <!- tl, br ->
+<div> <!-- tl, br -->
 	<img id="r" src="http://{{.Host}}:{{.Port}}/r.png">
 	<span>// three.js</span>
 	<img id="k" src='http://{{.Host}}:{{.Port}}/qr.kit.iop.red.png'/>
