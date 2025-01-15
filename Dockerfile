@@ -47,5 +47,5 @@ RUN chmod +x /usr/local/bin/kit /usr/local/bin/qr.kit
 CMD ["/bin/bash"]
 
 # Optionally, if you want to run one of the applications by default, uncomment one of the following lines:
-# CMD ["kit"]
+CMD ["kit"]
 # CMD ["qr.kit"]
