@@ -1,0 +1,96 @@
+This sounds like a great idea! Let's break down how you can approach building such a tool:
+
+1) Designing your schema
+Firstly, we need to design our schema so that all relevant data points can easily be stored within one object or document. In this case, there may not necessarily be any specific requirements beyond what's listed above - but just to keep things simple let's assume they exist. 
+
+2) Defining your API endpoints 
+Next, define some RESTful endpoints that allow clients/users to interact with the server. These could include routes like "/person/:id" to retrieve individual nodes, POST requests to add new ones, etc. You'll want to ensure that users have appropriate permissions to access certain resources if applicable.
+
+3) Writing the server code 
+Now comes the fun part! Here, you'll write the actual logic behind retrieving, storing, updating, deleting, querying, and visualising the data. For example, here might be some common operations:
+
+To insert a new node into the graph:
+1. Parse incoming JSON payload containing node details 
+2. Generate unique ID for node using UUID library 
+3. Create new row in Spanner table 
+4. Store node details as single entity 
+
+To update an existing node:
+1. Retrieve corresponding rows from Spanner table where matching `seed` value exists  
+2. Update values for fields specified in PUT body 
+3. Commit updated transaction to Spanner  
+
+To delete a node from the graph:
+1. Delete associated rows from Spanner table 
+2. Return successful deletion confirmation to client 
+
+To query the entire graph:
+1. Execute SELECT statement against Spanner table 
+2. Convert returned results back into array of objects representing graph nodes 
+3. Use ThreeJS library to render the scene with nodes represented as spheres at their respective positions 
+ 
+4) Building out the front end 
+Finally, once the server side functionality is complete, you can begin working on the user interface. With React, you should be able to use components to handle rendering and interactivity between elements, making development much easier than traditional web app frameworks. Additionally, you can make use of libraries like D3.js to generate more complex graphs or animations later on depending on needs.
+
+
+
+Three.js Graph Visualization User Interface Design Document
+
+Title: Navigation and Interaction with the Visualized Data in a Three.js Application
+Author(s): <NAME>, PhD, Assistant Professor of Computer Science at Georgia Institute of Technology
+
+Abstract: This paper presents an interface design concept for navigating and interacting with data visualizations created using the popular JavaScript library, Three.js. The proposed system will provide users with intuitive controls such as zooming and panning capabilities while also allowing them to interact with different objects within the scene. Additionally, this approach provides support for customizable features like highlighting specific nodes or edges based on certain criteria. Lastly, we propose incorporating machine learning algorithms into our applications so they can automatically identify patterns and relationships between nodes or links within the scene without requiring any human intervention. Overall, these concepts should help improve usability and engagement by providing users with more powerful ways to explore complex datasets visually. 
+
+Introduction 
+Three.js is a widely used web-based graphics engine developed by Mike Burns that enables developers to create stunning interactive 3D scenes in their browsers. It offers many built-in functions including loading models from various file formats (e.g., OBJ), rendering real-time lighting effects, handling mouse events, etc. Despite its versatility, it may not be easy for beginners to understand how to use all the available tools effectively. To address this issue, I have designed a user interface prototype that utilizes some common principles and techniques found in modern UI/UX design practices.  
+
+The goal of my project is to develop a simple yet effective way for users to visualize large-scale graphs and networks. These types of data structures are commonly encountered in fields ranging from biology, social sciences, engineering, finance, and medicine. By creating interfaces that allow users to efficiently manipulate and analyze these types of data, researchers and scientists alike gain valuable insights into their underlying structure and behavior. In addition, this tool could enable other disciplines outside of computer science to utilize similar methodsology when working with complex data sets. 
+
+
+Design Principles
+I am adhering to several basic design principles throughout my design process. First, simplicity. Second, consistency. Third, feedback. Fourth, familiarity. Fifth, clarity. Sixth, naturalness. Seventh, empathy. Eighth, direct manipulation. Ninth, efficiency. Tenth, intuitiveness. 
+
+Simplicity: My solution must be straightforward enough to convince non-technical people who do not have extensive experience in programming. They need only know what kind of interactions they want to perform, where to click, and which buttons to press. 
+
+Consistency: All elements of the interface must follow consistent styles and behaviors. Users expect everything to work consistently across the entire app, regardless of context. 
+
+Feedback: Feedback mechanisms must be provided whenever possible to inform users about the status of their actions. Error messages should appear clearly and prominently if necessary. 
+
+Familiarity: Since most users already possess knowledge related to navigation systems, I try to keep things familiar and comfortable for those who already have prior experience with digital mapping software. 
+
+Clarity: When presenting information, labels and icons should be clear and concise. Textual explanations should avoid jargon and technical terms unless absolutely necessary. 
+
+Naturalness: As much as possible, I seek to make my product feel natural and effortless to operate. Animations, gestures, and movement should enhance the overall feeling of interaction rather than distract away from the task at hand. 
+
+Empathy: Empathizing with users' needs and preferences makes for better solutions. A responsive design approach ensures that users can quickly adapt to changes in conditions and environments. 
+
+Direct Manipulation: Direct manipulations over spatial coordinates ensure greater precision and speed compared to indirect input devices. For example, dragging a slider control instead of clicking multiple buttons to select options improves accuracy and reduces errors. 
+
+Efficiency: Optimizing performance is essential to ensuring smooth and seamless operation. Any delays introduced during animations, transitions, or updates should be kept to a minimum. 
+
+Intuition: Intuitive design decisions encourage users to learn faster and become self-reliant. Consistency in placement and function helps users remember which button does what even after months of use. 
+
+
+Interface Layout 
+My design consists of two main parts - the viewport area and the side bar menu. 
+
+1) Viewport Area  
+This part displays the actual content being displayed in the browser window. Here you'll find your 3D model or network map, alongside menus and controls that allow you to customize your viewpoint and interact with the items within the scene.
+
+2) Side Bar Menu   
+In order to give users access to additional functionalities beyond simply exploring the dataset, I've included a sidebar menu located on the left edge of the screen. Each item in the menu represents one action that a user can take, such as filtering out unwanted nodes or applying color coding schemes. Clicking each option reveals further configuration settings relevant to that feature.
+
+
+Viewport Controls
+To facilitate efficient exploration of the data, I've added a set of standard controls that every viewer should come equipped with. These include pan, rotate, zoom, and reset views. 
+
+Pan Control: Allows the user to move around the scene freely, enabling them to see details hidden behind obstacles or occlusions. Hold down the middle mouse button to activate. Dragging upwards moves the camera towards the center point, whereas dragging horizontally rotates the object. Release the mouse button to stop moving.
+
+Rotate Control: Similar to the pan control but instead of translating the camera position, this rotation method turns the camera itself. You hold down either the right or left mouse button to initiate rotation. Then drag the mouse pointer to rotate the scene. Once satisfied, release both buttons to complete the turn.
+
+Zoom Control: Enables the user to change the scale of the rendered image. Simply hover over the scene and scroll up or down to zoom in or out. Alternatively, double-click on the canvas to zoom to fit the contents exactly.
+
+Reset Views Button: Provides a quick way to return to default viewing parameters, removing any manual adjustments made to the viewpoint.
+
+Additional Features
+Some optional features that might be useful for advanced users include node clustering, pathfinding algorithm integration, and link weight adjustment. Node Clustering: Groups together similar nodes to reduce clutter and simplify analysis. Path Finding Algorithm Integration: Uses AI algorithms to suggest routes or connections among selected nodes. Link Weight Adjustment: Lets the user dynamically modify the thickness of lines connecting nodes according to predefined weights assigned to individual links.
