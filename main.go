@@ -168,6 +168,9 @@ func main() {
 			url = "https://www.thepresynct.com.au"
 		case "naamba":
 			url = "https://naa.mba"
+		case "🖭":
+			url = "https://naa.mba"
+			filename = "tape"
 		}
 
 		err = t.ExecuteTemplate(w, "kit", templateData{Host: host, Port: port, Filename: filename, URL: url})
