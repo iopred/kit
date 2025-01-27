@@ -164,12 +164,14 @@ func main() {
 			url = "https://www.keeperproject.com.au"
 		case "bad.habit":
 			url = "https://badhabitrecords.com.au"
+			filename = "qr.bad.habit"
 		case "the.presynct":
 			url = "https://www.thepresynct.com.au"
+			filename = "qr.the.presynct"
 		case "naamba":
 			url = "https://naa.mba"
 		case "🖭":
-			url = "https://naa.mba/naa.mba.png"
+			url = "https://naa.mba/heliattack.png"
 			filename = "tape"
 		}
 
