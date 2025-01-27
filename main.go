@@ -153,15 +153,18 @@ func main() {
 			url = "https://heliattack.com"
 			filename = "ha2000"
 		case "ha2000":
+			fallthrough
+		case "heliattack2000":
 			url = "https://heliattack.com/game"
+			filename = "ha2000"
+		case "ufo":
+			fallthrough
 		case "ufo.naa.mba":
 			url = "https://ufo.naa.mba"
 		case "naamba":
 			fallthrough
 		case "naa.mba":
 			url = "https://naa.mba"
-		case "ufo":
-			url = "https://ufo.naa.mba"
 		case "the.keeper":
 			url = "https://www.keeperproject.com.au"
 		case "bad.habit":
