@@ -14,7 +14,7 @@ import (
 func main() {
 	var kit Node
 	if kit, err := loadKit(); err == nil {
-		kit.now();	
+		kit.now()
 	} else {
 		panic(fmt.Errorf("%w", errors.WithStack(err)))
 	}
@@ -27,7 +27,7 @@ func main() {
 		Host     string
 		Port     int
 		Filename string
-		URL	     string
+		URL      string
 	}
 
 	kitHandler := func(w http.ResponseWriter, r *http.Request) {
@@ -96,7 +96,7 @@ func main() {
 			Host     string
 			Port     int
 			Filename string
-			URL	     string
+			URL      string
 		}
 
 		htmlt := `
@@ -156,6 +156,8 @@ func main() {
 			url = "https://heliattack.com/game"
 		case "ufo.naa.mba":
 			url = "https://ufo.naa.mba"
+		case "naamba":
+			fallthrough
 		case "naa.mba":
 			url = "https://naa.mba"
 		case "ufo":
@@ -168,9 +170,9 @@ func main() {
 		case "the.presynct":
 			url = "https://www.thepresynct.com.au"
 			filename = "qr.the.presynct"
-		case "naamba":
-			url = "https://naa.mba"
 		case "🖭":
+			fallthrough
+		case "📼":
 			url = "https://naa.mba/heliattack.png"
 			filename = "tape"
 		}
@@ -263,7 +265,7 @@ func main() {
 	http.HandleFunc("/the.presynct", func(w http.ResponseWriter, r *http.Request) {
 		htmlHandler(w, r, "the.presynct")
 	})
-	
+
 	http.HandleFunc("/📼", func(w http.ResponseWriter, r *http.Request) {
 		htmlHandler(w, r, "📼")
 	})
