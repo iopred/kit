@@ -169,7 +169,7 @@ func main() {
 		case "naamba":
 			url = "https://naa.mba"
 		case "🖭":
-			url = "https://naa.mba/tape"
+			url = "https://naa.mba/naa.mba.png"
 			filename = "tape"
 		}
 
@@ -252,6 +252,18 @@ func main() {
 
 	http.HandleFunc("/the.keeper", func(w http.ResponseWriter, r *http.Request) {
 		htmlHandler(w, r, "the.keeper")
+	})
+
+	http.HandleFunc("/bad.habit", func(w http.ResponseWriter, r *http.Request) {
+		htmlHandler(w, r, "bad.habit")
+	})
+
+	http.HandleFunc("/the.presynct", func(w http.ResponseWriter, r *http.Request) {
+		htmlHandler(w, r, "the.presynct")
+	})
+	
+	http.HandleFunc("/📼", func(w http.ResponseWriter, r *http.Request) {
+		htmlHandler(w, r, "📼")
 	})
 
 	fmt.Println(kit.now())
