@@ -169,7 +169,7 @@ func main() {
 		case "naamba":
 			url = "https://naa.mba"
 		case "🖭":
-			url = "https://naa.mba"
+			url = "https://naa.mba/tape"
 			filename = "tape"
 		}
 
@@ -184,6 +184,10 @@ func main() {
 		fmt.Println("png", filename)
 
 		filename = strings.Trim(filename, ".png")
+
+		if filename == "📼" {
+			filename = "tape"
+		}
 
 		qrCode, _ := qrcode.New(filename, qrcode.Low)
 		if err := qrCode.Write(11, w); err != nil {
