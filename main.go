@@ -30,67 +30,8 @@ func main() {
 		URL      string
 	}
 
-	kitHandler := func(w http.ResponseWriter, r *http.Request) {
-		html := `
-<html>
-<head>
-	<style>
-		* {
-			margin: 0;
-			padding: 0;
-		}
-		div {
-			display: inline-grid;
-			grid-template-areas:
-				"r g b t"
-				"a k k k"
-				"d k k k"
-				"d k k k";
-			place-self: center;
-			// background-image: url('kit.png');
-			// background-repeat: no-repeat;
-		}
-		div > * {
-			mix-blend-mode: multiply;
-		}
-		span,
-		iframe {
-			border: 0px;
-		}
-		#k {
-			grid-area: k;
-		}
-	</style>
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
-</head>
-<body>
-<div> <!-- r, g, b -->
-	<img id="r" src="http://{{.Host}}:{{.Port}}/r.png">
-	<span>// three.js</span>
-	<img id="k" src='http://{{.Host}}:{{.Port}}/qr.kit.iop.red.png'/>
-</div>
-</body>
-</html>`
-
-		t, err := template.New("foo").Parse(fmt.Sprintf(`{{define "kit"}}%s{{end}}`, html))
-		if err != nil {
-			panic("undefined")
-		}
-
-		err = t.ExecuteTemplate(w, "kit", templateData{Host: host, Port: port, Filename: filename, URL: filename})
-		if err != nil {
-			panic("undefined")
-		}
-
-	}
-
 	htmlHandler := func(w http.ResponseWriter, r *http.Request, filename string) {
 		fmt.Println("html", filename)
-
-		if filename == "qr.kit.iop.red" {
-			kitHandler(w, r)
-			return
-		}
 
 		type templateData struct {
 			Host     string
@@ -137,7 +78,7 @@ func main() {
 <body>
 <div> <!-- tl, br -->
 	<iframe src='{{.URL}}'></iframe>
-	<img src='/{{.Filename}}.png' id="qr" onclick="hideElement(this)" style="cursor: pointer;/>
+	<img src='/{{.Filename}}.png' id="qr" onclick="hideElement(this)" style="cursor: pointer;"/>
 
 	<script>
         function hideElement(element) {
