@@ -21,7 +21,6 @@ func main() {
 
 	port := 3242
 	host := "naa.mba"
-	filename := "ufo.png"
 
 	type templateData struct {
 		Host     string
