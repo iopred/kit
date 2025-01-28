@@ -137,7 +137,13 @@ func main() {
 <body>
 <div> <!-- tl, br -->
 	<iframe src='{{.URL}}'></iframe>
-	<a href="{{.URL}}" target="_blank"><img src='/{{.Filename}}.png' id="qr"/></a>
+	<img src='/{{.Filename}}.png' id="qr" onclick="hideElement(this)" style="cursor: pointer;/>
+
+	<script>
+        function hideElement(element) {
+            element.style.display = 'none';
+        }
+    </script>
 </div>
 </body>
 </html>`
