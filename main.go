@@ -40,6 +40,7 @@ func main() {
 		}
 
 		htmlt := `
+<!DOCTYPE html>
 <html>
 <!-- kit -->
 <head>
@@ -178,6 +179,7 @@ func main() {
 				if strings.HasPrefix(filename, "qr.") {
 					pngHandler(w, r, "https://naa.mba/"+strings.Trim(filename, "qr.")+".png")
 				} else {
+					fmt.Println("serving", filename+".png")
 					http.ServeFile(w, r, filename+".png")
 				}
 			case "html":
