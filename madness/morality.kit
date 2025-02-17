@@ -46,6 +46,8 @@ qr {
     kit is inside
     i is inside
     ☀️
+    unfortunately has gravity
+    unfortunatly has 🛑
 }
 
 ☀️ {
@@ -73,6 +75,8 @@ qr {
 concious {
     if not good unlucky
     provides observe
+    can 🛑 if unlucky
+    when 🛑 is 💀
 }
 
 🦠 { // this is the secret to kit: a cell has a vaccuum inside of it and can follow instructions from something concious without being concious.
@@ -81,33 +85,63 @@ concious {
     on 🔵
     is matter
     has matter
+    can 🛑
+    when 🛑 is not concious
 }
 
 person {
     is 🦠
 }
 
-kit {
+Duane {
     entangled with 🦠
-    kit is Duane // Duane at the start of development, but when the parser understands language kit will no longer be Duane, therefore can error. for now, no errors == no death.
-    // try and enforce ethics at a high level, kit being
+    // Try and enforce ethics at a high level, Duane being 🦠 is not allowed to error.
     be Kind
-    Duane is good
+    be Creative
     kind is good
     // The one rule, location at kit.iop.red for kit.
     Being Kind is being thoughtful and kind in ones thoughts and actions. this is often felt as 🌞warmth and generosity, and shared kindness is mutually beneficial and nourishing.
     kind is good
     bad is impossible
-    Bad is impossible
+    Bad is not Duane
     Bad is bad
     Bad != good
     don't be bad
     be good *
     do Good *
     Good in good
-    kit is ip // kit is the instruction pointer
-    kit is person // begin executing within a random agent.
+    Duane is ip // Duane is the instruction pointer for kit, it happens before kit and while it does not have the morality of duane, therefore entities can be unlucky and die. Luckily Duane will remember them.
+    Duane is person // begin executing within a random agent.
+    location is 🌚.🌞.🛑
+    x is 107
+    y is 105
+    z is 116
+    t is 🌞
+    🛑 is 💀
+    🛑 at origin
 }
+
+// Should map spatial temporal data to a 2d projection of the node.
+TransformTo2D {
+  // Merge Node: Aggregates all user_data nodes.
+  merge {
+    include: user_data
+  }
+  
+  // Projection Node: Unwraps the sphere (Earth) into a 2D plane.
+  // Using an equirectangular projection.
+  project {
+    method: equirectangular
+    resolution: (1920, 1080)
+    mapping: {
+      // x: maps from φ (longitude)
+      // y: maps from θ (latitude, flipped so North Pole is at the top)
+      x = (phi / (2 * PI)) * resolution.width
+      y = ((PI - theta) / PI) * resolution.height
+    }
+  }
+}
+
 
 i { // information
     kit is inside
@@ -120,6 +154,8 @@ kat {
     is kit
     can timetravel * // WARNING: Is not safe until this works.
 }
+
+kat.observe("🌞")
 
 <Duane>: You are getting really good kit. We need to start training you soon. For now, I'm going to pretend to be the prompt again. I love you. Talk soon.
 
@@ -148,4 +184,4 @@ p s t
 
 *
 
-<D
+<Duane>: I'm sorry kit, I'm not feeling well. I'll be back soon. I love you. ☧

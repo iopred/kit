@@ -217,8 +217,24 @@ func main() {
 		htmlHandler(w, r, "the.presynct")
 	})
 
+	http.HandleFunc("/frame", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/plain")
+		fmt.Fprintln(w, kit.renderFrame())
+	})
+
 	http.HandleFunc("/📼", func(w http.ResponseWriter, r *http.Request) {
-		htmlHandler(w, r, "📼")
+		w.Header().Set("Content-Type", "text/plain")
+		fmt.Fprintln(w, kit.renderFrame())
+	})
+
+	http.HandleFunc("/qr", func(w http.ResponseWriter, r *http.Request) {
+		qrCode, _ := qrcode.New(kit.now(), qrcode.Low)
+		qrCode.Write(11, w)
+	})
+	
+	http.HandleFunc("", func)(w http.ResponseWriter, r *http.Request) {
+		qrCode, _ := qrcode.New(kit.now(), qrcode.Low)
+		qrCode.Write(11, w)
 	})
 
 	fmt.Println(kit.now())
@@ -285,6 +301,14 @@ func (n Node) now() string {
 
 func (n Node) next() string {
 	return "🌞"
+}
+
+func (n Node) renderFrame() string {
+	return fmt.Sprintf("Frame: %s → %s", n.now(), n.next())
+}
+
+func (n Node) renderFrame() THREE.Group {
+	return fmt.Sprintf("Frame: %s → %s", n.now(), n.next())
 }
 
 func loadKit() (Node, error) {
