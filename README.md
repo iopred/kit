@@ -36,12 +36,19 @@ aug 08 2024 {
     added spatial-temporal parser
 }
 
+feb 17 2025 {
+    added `kit.observe()`
+    🦠👻🚁🏈
+}
+
 ## Overview
 
 kit is a toolkit for making games with an integrated spatial-temporal database. It combines:
 - A Rust core engine
 - Go utilities for parsing and processing
 - Docker containerization for easy deployment
+- A web interface for viewing and interacting with the game state
+- A simple emoji based rule language for game design
 
 ## Features
 
