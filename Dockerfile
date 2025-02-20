@@ -44,7 +44,7 @@ COPY --from=kit_builder /usr/src/kit/target/x86_64-unknown-linux-musl/release/ki
 COPY --from=qr_kit_builder /qr.kit /usr/local/bin/qr.kit
 
 # Copy the Go binary from the second stage
-COPY --from=heliattack_builder /🚁.kit /usr/local/bin/🚁.kit
+# COPY --from=heliattack_builder /🚁.kit /usr/local/bin/🚁.kit
 
 # Expose a port for the Go application (if needed)
 EXPOSE 3242
