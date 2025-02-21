@@ -37,6 +37,17 @@ func main() {
 		panic(fmt.Errorf("%w", errors.WithStack(err)))
 	}
 
+	// Check for command-line arguments
+	if len(os.Args) > 1 {
+		emoji := string(os.Args[1][0]) // Get the first character of the first argument
+		filename := fmt.Sprintf("%s.png", emoji) // Create the filename
+		if err := generateQR(filename, emoji); err != nil {
+			fmt.Printf("Error generating QR code: %v\n", err)
+			os.Exit(1)
+		}
+		return // Exit after generating the QR code
+	}
+
 	port := 3242
 	host := os.Getenv("HOST")
 	if host == "" {
