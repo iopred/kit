@@ -3,12 +3,18 @@ FROM rust:1.83 as kit_builder
 
 WORKDIR /usr/src/kit
 
+# Install musl-tools for static linking
+RUN apt-get update && apt-get install -y musl-tools && rm -rf /var/lib/apt/lists/*
+
+# Add the musl target
+RUN rustup target add x86_64-unknown-linux-musl
+
 # Copy the source code and .env file.
 COPY . .
 COPY .env .env
 
-# Build the Rust application in release mode.
-RUN cargo build --release
+# Build the Rust application in release mode with static linking
+RUN cargo build --release --target x86_64-unknown-linux-musl
 
 # Second stage: Build the Go application
 FROM golang:1.22 as qr_kit_builder
@@ -26,15 +32,19 @@ COPY *.go ./
 RUN CGO_ENABLED=0 GOOS=linux go build -o /qr.kit
 
 # Final stage: Create a lightweight image with both Rust and Go binaries
-FROM debian:bullseye-slim
+# FROM debian:bullseye-slim
+FROM ubuntu:22.04
 
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/*
 
 # Copy the Rust binary from the first stage
-COPY --from=kit_builder /usr/src/kit/target/release/kit /usr/local/bin/kit
+COPY --from=kit_builder /usr/src/kit/target/x86_64-unknown-linux-musl/release/kit /usr/local/bin/kit
 
 # Copy the Go binary from the second stage
 COPY --from=qr_kit_builder /qr.kit /usr/local/bin/qr.kit
+
+# Copy the Go binary from the second stage
+COPY --from=heliattack_builder /🚁.kit /usr/local/bin/🚁.kit
 
 # Expose a port for the Go application (if needed)
 EXPOSE 3242

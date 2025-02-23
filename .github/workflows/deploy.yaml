@@ -1,0 +1,49 @@
+name: CI Workflow
+
+on:
+  push:
+    branches:
+      - master  # Trigger on pushes to the master branch
+  pull_request:
+    branches:
+      - master  # Trigger on pull requests targeting master
+
+jobs:
+  test:
+    runs-on: ubuntu-latest  # or your desired runner environment
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Node.js (or your relevant environment)
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22.4.0'
+
+    - name: Install dependencies
+      run: npm install  # or your install command
+
+    - name: Run tests
+      run: npm test  # replace with your test command
+
+  deploy:
+    if: success()  # Only runs if the test job passes
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Pull latest from master
+      run: |
+        git fetch origin
+        git checkout master
+        git pull origin master
+
+    - name: Deploy (e.g., pull on your server)
+      run: |
+        # Here, you'd add your deploy command to your server, like SSH, rsync, etc.
+        echo "Deploying to server..."
+        # Example SSH command
+        ssh user@yourserver.com 'cd /path/to/your/repo && git pull origin master && ./deploy_script.sh'
