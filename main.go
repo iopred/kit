@@ -1,19 +1,70 @@
 package main
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
-	"strings"
-	"strconv"
-	"text/template"
 	"os/signal"
+	"path/filepath"
+	"strconv"
+	"strings"
 	"syscall"
-	"context"
+	"text/template"
 
+	"github.com/joho/godotenv"
 	"github.com/pkg/errors"
 	"github.com/skip2/go-qrcode"
 )
+
+var emojiMetadata map[string]string
+
+func init() {
+	emojiMetadata = make(map[string]string)
+	err := filepath.Walk("./emoji", func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !info.IsDir() && info.Name() == "metadata.json" {
+			data, err := os.ReadFile(path)
+			if err != nil {
+				return err
+			}
+			var metadata struct {
+				Glyph            string   `json:"glyph"`
+				CLDR             string   `json:"cldr"`
+				UnicodeSkinTones []string `json:"unicodeSkintones"`
+			}
+			if err := json.Unmarshal(data, &metadata); err != nil {
+				return err
+			}
+
+			metadata.CLDR = strings.ReplaceAll(metadata.CLDR, " ", "_")
+
+			if len(metadata.UnicodeSkinTones) > 0 {
+				emojiMetadata[metadata.Glyph] = filepath.Join(filepath.Dir(path), "Default/3D/", metadata.CLDR+"_3d_default.png")
+			} else {
+				emojiMetadata[metadata.Glyph] = filepath.Join(filepath.Dir(path), "3D/", metadata.CLDR+"_3d.png")
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		panic(fmt.Errorf("error loading emoji metadata: %w", errors.WithStack(err)))
+	}
+}
+
+func emojiHandler(w http.ResponseWriter, r *http.Request, emoji string) {
+	// Maybe check that the emoji is a rune?
+
+	if path, ok := emojiMetadata[emoji]; ok {
+		fmt.Println("serving ", emoji, " :", path)
+		http.ServeFile(w, r, path)
+	} else {
+		http.Error(w, "Emoji not found", http.StatusNotFound)
+	}
+}
 
 func main() {
 	// Create a context that listens for interrupt signals
@@ -30,16 +81,22 @@ func main() {
 		cancel() // Cancel the context to signal shutdown
 	}()
 
-	var kit Node = Node{false, false, false, false, 0001}
+	// Load .env file
+	err := godotenv.Load()
+	if err != nil {
+		panic(fmt.Errorf("error loading .env file: %w", errors.WithStack(err)))
+	}
+
 	if kit, err := loadKit(); err == nil {
-		kit.now()
+		fmt.Println(kit.now(), "->", kit.next())
 	} else {
-		panic(fmt.Errorf("%w", errors.WithStack(err)))
+		panic(fmt.Errorf("error loading kit: %w", errors.WithStack(err)))
 	}
 
 	// Check for command-line arguments
 	if len(os.Args) > 1 {
-		emoji := string(os.Args[1][0]) // Get the first character of the first argument
+		// todo merge with the emoji image.
+		emoji := string(os.Args[1][0])           // Get the first character of the first argument
 		filename := fmt.Sprintf("%s.png", emoji) // Create the filename
 		if err := generateQR(filename, emoji); err != nil {
 			fmt.Printf("Error generating QR code: %v\n", err)
@@ -136,10 +193,12 @@ func main() {
 		case "heliattack":
 			url = "https://heliattack.com"
 			filename = "ha2000"
-		case "ha2000":
-			fallthrough
 		case "heliattack2000":
-			url = "https://heliattack.com/game"
+			fallthrough
+		case "ha2k":
+			fallthrough
+		case "ha2000":
+			url = "https://ha2k.heliattack.com"
 			filename = "ha2000"
 		case "ufo":
 			fallthrough
@@ -157,11 +216,15 @@ func main() {
 		case "the.presynct":
 			url = "https://www.thepresynct.com.au"
 			filename = "qr.the.presynct"
-		case "🖭":
-			fallthrough
+		case "🧑":
+			url = "https://kit.iop.red/emoji/🧑"
+			filename = "https://kit.iop.red/qr.🧑.png"
+		case "🚁":
+			url = "https://heliattack.com"
+			filename = "https://kit.iop.red/qr.🚁.png"
 		case "📼":
-			url = "https://naa.mba/heliattack.png"
-			filename = "tape"
+			url = "https://ha2k.heliattack.com"
+			filename = "https://kit.iop.red/qr.📼.png"
 		}
 
 		err = t.ExecuteTemplate(w, "kit", templateData{Host: host, Port: port, Filename: filename, URL: url})
@@ -254,79 +317,25 @@ func main() {
 		htmlHandler(w, r, "the.presynct")
 	})
 
-	http.HandleFunc("/frame", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "text/plain")
-		fmt.Fprintln(w, kit.renderFrame())
-	})
-
-	http.HandleFunc("/📼", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "text/plain")
-		fmt.Fprintln(w, kit.renderFrame())
-	})
-
-	http.HandleFunc("/qr", func(w http.ResponseWriter, r *http.Request) {
-		qrCode, _ := qrcode.New(kit.now(), qrcode.Low)
-		qrCode.Write(11, w)
-	})
-	
-	http.HandleFunc("", func(w http.ResponseWriter, r *http.Request) {
-		qrCode, _ := qrcode.New(kit.now(), qrcode.Low)
-		qrCode.Write(11, w)
-	})
-
-	// http.HandleFunc("/emoji/", func(w http.ResponseWriter, r *http.Request) {
-	// 	emoji := strings.TrimPrefix(r.URL.Path, "/emoji/")
-	// 	w.Header().Set("Content-Type", "image/png")
-	// 	w.Header().Set("Cache-Control", "public, max-age=31536000")
-		
-	// 	// Convert emoji string to actual emoji
-	// 	emojiBytes := []byte(emoji)
-	// 	// Decode URL-encoded emoji
-	// 	decodedEmoji, err := url.QueryUnescape(string(emojiBytes))
-	// 	if err != nil {
-	// 		http.Error(w, "Invalid emoji", http.StatusBadRequest)
-	// 		return
-	// 	}
-		
-	// 	w.Write([]byte(decodedEmoji))
-	// })
-
-	fmt.Println(kit.now())
-	fmt.Println(kit.next())
-	fmt.Println(kit.renderFrame())
-
-	// err := http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
-	// if errors.Is(err, http.ErrServerClosed) {
-	// 	fmt.Errorf("server closed\n")
-	// } else if err != nil {
-	// 	fmt.Errorf("error starting server: %w\n", errors.WithStack(err))
-	// 	os.Exit(1)
-	// }
-
-	// fmt.Println("exiting")
-
-	// Create a new HTTP server
 	srv := &http.Server{
 		Addr: fmt.Sprintf(":%d", port),
 	}
 
-	// Start the server in a goroutine
 	go func() {
-		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			fmt.Errorf("error starting server: %w\n", errors.WithStack(err))
+		err = http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
+		if errors.Is(err, http.ErrServerClosed) {
+			fmt.Println("server closed")
+		} else if err != nil {
+			fmt.Println("error starting server: %w", errors.WithStack(err))
 			os.Exit(1)
 		}
 	}()
 
-	// Wait for the context to be cancelled
 	<-ctx.Done()
 
-	// Shutdown the server gracefully
 	if err := srv.Shutdown(context.Background()); err != nil {
-		fmt.Errorf("server shutdown failed: %v", err)
+		fmt.Println("server shutdown failed: %w", err)
 	}
-
-	fmt.Println("exiting")
 }
 
 func generateQR(filename, url string) error {
@@ -409,48 +418,48 @@ func (n Node) next() string {
 		return "🌞"
 	}
 
-	return string(n.Nodes); 
+	return string(n.Nodes)
 }
 
 func (n Node) renderFrame() string {
-    // Create a recursive tree structure using emojis
-    // Root emoji is the current time/state
-    root := n.now()
-    
-    // Build branches using different emojis based on node properties
-    var branches []string
-    
-    // Add branches based on node properties
-    if n.X {
-        branches = append(branches, "→🔴")  // Red for X
-    }
-    if n.Y {
-        branches = append(branches, "↑🟡")  // Yellow for Y
-    }
-    if n.Z {
-        branches = append(branches, "↗️🔵")  // Blue for Z
-    }
-    if n.Gravity {
-        branches = append(branches, "↓⚫")  // Black for Gravity
-    }
-    
-    // Add sub-nodes based on Nodes byte value
+	// Create a recursive tree structure using emojis
+	// Root emoji is the current time/state
+	root := n.now()
+
+	// Build branches using different emojis based on node properties
+	var branches []string
+
+	// Add branches based on node properties
+	if n.X {
+		branches = append(branches, "→🔴") // Red for X
+	}
+	if n.Y {
+		branches = append(branches, "↑🟡") // Yellow for Y
+	}
+	if n.Z {
+		branches = append(branches, "↗️🔵") // Blue for Z
+	}
+	if n.Gravity {
+		branches = append(branches, "↓⚫") // Black for Gravity
+	}
+
+	// Add sub-nodes based on Nodes byte value
 
 	// todo: append sub nodes to string following the path.
-    // for i := byte(0); i < n.Nodes; i++ {
-    //     branches = append(branches, "⤵️"+string(rune('0'+i)))
-    // }
-    
-    // Combine root with branches
-    result := root
-    if len(branches) > 0 {
-        result += " " + strings.Join(branches, " ")
-    }
-    
-    // Add next state
-    // result += " → " + n.kat().next()
-    
-    return result
+	// for i := byte(0); i < n.Nodes; i++ {
+	//     branches = append(branches, "⤵️"+string(rune('0'+i)))
+	// }
+
+	// Combine root with branches
+	result := root
+	if len(branches) > 0 {
+		result += " " + strings.Join(branches, " ")
+	}
+
+	// Add next state
+	// result += " → " + n.kat().next()
+
+	return result
 }
 
 // Frame: 0009 →🔴 ↗️🔵 ↓⚫ ⤵️0 ⤵️1 → 🌞
@@ -462,10 +471,10 @@ func (n Node) renderFrame() THREE.Group {
 
 	// Create a box for each node
 	box := THREE.NewBoxGeometry(1, 1, 1)
-	
-	// Create a material for the nodes	
+
+	// Create a material for the nodes
 	material := THREE.NewMeshBasicMaterial(THREE.Color(0x00ff00))
-	
+
 	// Create a mesh for each node
 	mesh := THREE.NewMesh(box, material)
 
@@ -506,10 +515,10 @@ func (n Node) renderFrame() THREE.Group {
 
 	// Return the complete group representing the recursive threejs scene.
 	return group
-	
-	
+
+
 }
-	*/
+*/
 
 func loadKit() (Node, error) {
 	return Node{false, false, false, true, 0001}, nil
