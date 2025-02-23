@@ -40,7 +40,7 @@ func init() {
 				return err
 			}
 
-			metadata.CLDR = strings.ReplaceAll(metadata.CLDR, " ", "_")
+			metadata.CLDR = strings.ToLower(strings.ReplaceAll(metadata.CLDR, " ", "_"))
 
 			if len(metadata.UnicodeSkinTones) > 0 {
 				emojiMetadata[metadata.Glyph] = filepath.Join(filepath.Dir(path), "Default/3D/", metadata.CLDR+"_3d_default.png")
