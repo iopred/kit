@@ -1,25 +1,87 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
+	"path/filepath"
+	"strconv"
 	"strings"
 	"text/template"
 
+	"github.com/joho/godotenv"
 	"github.com/pkg/errors"
 	"github.com/skip2/go-qrcode"
 )
 
-func main() {
-	var kit Node
-	if kit, err := loadKit(); err == nil {
-		kit.now()
+var emojiMetadata map[string]string
+
+func init() {
+	emojiMetadata = make(map[string]string)
+	err := filepath.Walk("./emoji", func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !info.IsDir() && info.Name() == "metadata.json" {
+			data, err := os.ReadFile(path)
+			if err != nil {
+				return err
+			}
+			var metadata struct {
+				Glyph            string   `json:"glyph"`
+				CLDR             string   `json:"cldr"`
+				UnicodeSkinTones []string `json:"unicodeSkintones"`
+			}
+			if err := json.Unmarshal(data, &metadata); err != nil {
+				return err
+			}
+
+			metadata.CLDR = strings.ReplaceAll(metadata.CLDR, " ", "_")
+
+			if len(metadata.UnicodeSkinTones) > 0 {
+				emojiMetadata[metadata.Glyph] = filepath.Join(filepath.Dir(path), "Default/3D/", metadata.CLDR+"_3d_default.png")
+			} else {
+				emojiMetadata[metadata.Glyph] = filepath.Join(filepath.Dir(path), "3D/", metadata.CLDR+"_3d.png")
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		panic(fmt.Errorf("error loading emoji metadata: %w", errors.WithStack(err)))
+	}
+}
+
+func emojiHandler(w http.ResponseWriter, r *http.Request, emoji string) {
+	// Maybe check that the emoji is a rune?
+
+	if path, ok := emojiMetadata[emoji]; ok {
+		fmt.Println("serving ", emoji, " :", path)
+		http.ServeFile(w, r, path)
 	} else {
-		panic(fmt.Errorf("%w", errors.WithStack(err)))
+		http.Error(w, "Emoji not found", http.StatusNotFound)
+	}
+}
+
+func main() {
+	// Load .env file
+	err := godotenv.Load()
+	if err != nil {
+		panic(fmt.Errorf("error loading .env file: %w", errors.WithStack(err)))
 	}
 
-	port := 3242
+	if kit, err := loadKit(); err == nil {
+		fmt.Println(kit.now(), "->", kit.next())
+	} else {
+		panic(fmt.Errorf("error loading kit: %w", errors.WithStack(err)))
+	}
+
+	portStr := os.Getenv("QR_PORT")
+	port, err := strconv.Atoi(portStr)
+	if err != nil {
+		panic(fmt.Errorf("invalid port: %w", errors.WithStack(err)))
+	}
+
 	host := "naa.mba"
 	filename := "ufo.png"
 
@@ -152,10 +214,12 @@ func main() {
 		case "heliattack":
 			url = "https://heliattack.com"
 			filename = "ha2000"
-		case "ha2000":
-			fallthrough
 		case "heliattack2000":
-			url = "https://heliattack.com/game"
+			fallthrough
+		case "ha2k":
+			fallthrough
+		case "ha2000":
+			url = "https://ha2k.heliattack.com"
 			filename = "ha2000"
 		case "ufo":
 			fallthrough
@@ -173,11 +237,15 @@ func main() {
 		case "the.presynct":
 			url = "https://www.thepresynct.com.au"
 			filename = "qr.the.presynct"
-		case "🖭":
-			fallthrough
+		case "🧑":
+			url = "https://kit.iop.red/emoji/🧑"
+			filename = "https://kit.iop.red/qr.🧑.png"
+		case "🚁":
+			url = "https://heliattack.com"
+			filename = "https://kit.iop.red/qr.🚁.png"
 		case "📼":
-			url = "https://naa.mba/heliattack.png"
-			filename = "tape"
+			url = "https://ha2k.heliattack.com"
+			filename = "https://kit.iop.red/qr.📼.png"
 		}
 
 		err = t.ExecuteTemplate(w, "kit", templateData{Host: host, Port: port, Filename: filename, URL: url})
@@ -269,21 +337,37 @@ func main() {
 		htmlHandler(w, r, "the.presynct")
 	})
 
+	http.HandleFunc("/🧑", func(w http.ResponseWriter, r *http.Request) {
+		htmlHandler(w, r, "🧑")
+	})
+
+	http.HandleFunc("/🚁", func(w http.ResponseWriter, r *http.Request) {
+		htmlHandler(w, r, "🚁")
+	})
+
 	http.HandleFunc("/📼", func(w http.ResponseWriter, r *http.Request) {
 		htmlHandler(w, r, "📼")
 	})
 
-	fmt.Println(kit.now())
+	http.HandleFunc("/🖭", func(w http.ResponseWriter, r *http.Request) {
+		htmlHandler(w, r, "📼")
+	})
 
-	err := http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
+	http.HandleFunc("/emoji/", func(w http.ResponseWriter, r *http.Request) {
+		emojiHandler(w, r, r.URL.Path[len("/emoji/"):])
+	})
+
+	fmt.Println("Listening on port", port)
+
+	err = http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
 	if errors.Is(err, http.ErrServerClosed) {
-		fmt.Errorf("server closed\n")
+		panic("server closed")
 	} else if err != nil {
-		fmt.Errorf("error starting server: %w\n", errors.WithStack(err))
+		fmt.Println("error starting server: %w", errors.WithStack(err))
 		os.Exit(1)
 	}
 
-	fmt.Println("exiting")
+	fmt.Println("exiting qr.kit")
 }
 
 func generateQR(filename, url string) error {
