@@ -317,6 +317,26 @@ func main() {
 		htmlHandler(w, r, "the.presynct")
 	})
 
+	http.HandleFunc("/🧑", func(w http.ResponseWriter, r *http.Request) {
+		htmlHandler(w, r, "🧑")
+	})
+
+	http.HandleFunc("/🚁", func(w http.ResponseWriter, r *http.Request) {
+		htmlHandler(w, r, "🚁")
+	})
+
+	http.HandleFunc("/📼", func(w http.ResponseWriter, r *http.Request) {
+		htmlHandler(w, r, "📼")
+	})
+
+	http.HandleFunc("/🖭", func(w http.ResponseWriter, r *http.Request) {
+		htmlHandler(w, r, "📼")
+	})
+
+	http.HandleFunc("/emoji/", func(w http.ResponseWriter, r *http.Request) {
+		emojiHandler(w, r, r.URL.Path[len("/emoji/"):])
+	})
+
 	srv := &http.Server{
 		Addr: fmt.Sprintf(":%d", port),
 	}
