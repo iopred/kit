@@ -143,17 +143,7 @@ func main() {
 			margin: 0;
 			padding: 0;
 		}
-		div {
-			display: inline-grid;
-			grid-template-areas:
-				"r g b t"
-				"a k k k"
-				"d k k k"
-				"d k k k";
-			place-self: center;
-			// background-image: url('kit.png');
-			// background-repeat: no-repeat;
-		}
+			
 		iframe {
 			position: absolute;
 			width: 100%;
@@ -170,16 +160,14 @@ func main() {
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
 <body>
-<div> <!-- tl, br -->
-	<iframe src='{{.URL}}'></iframe>
-	<img src='/{{.Filename}}.png' id="qr" onclick="hideElement(this)" style="cursor: pointer;"/>
+<iframe src='{{.URL}}'></iframe>
+<img src='/{{.Filename}}.png' id="qr" onclick="hideElement(this)" style="cursor: pointer;"/>
 
-	<script>
-        function hideElement(element) {
-            element.style.display = 'none';
-        }
-    </script>
-</div>
+<script>
+	function hideElement(element) {
+		element.style.display = 'none';
+	}
+</script>
 </body>
 </html>`
 
