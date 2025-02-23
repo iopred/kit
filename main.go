@@ -143,7 +143,7 @@ func main() {
 			margin: 0;
 			padding: 0;
 		}
-			
+
 		iframe {
 			position: absolute;
 			width: 100%;
@@ -153,8 +153,8 @@ func main() {
 
 		img {
 			position: absolute;
-			right: 0px;
-			bottom: 0px;
+			right: 10px;
+			bottom: 10px;
 		}
 	</style>
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
