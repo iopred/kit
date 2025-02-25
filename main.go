@@ -207,6 +207,9 @@ func main() {
 		case "🧑":
 			url = "https://kit.iop.red/emoji/🧑"
 			filename = "https://kit.iop.red/qr.🧑.png"
+		case "🏡":
+			url = "https://kit.iop.red/emoji/🏡"
+			filename = "https://kit.iop.red/qr.🏡.png"
 		case "🌞":
 			url = "https://kit.iop.red/emoji/🌞"
 			filename = "https://kit.iop.red/qr.🌞.png"
@@ -216,6 +219,12 @@ func main() {
 		case "🌚":
 			url = "https://kit.iop.red/emoji/🌚"
 			filename = "https://kit.iop.red/qr.🌚.png"
+		case "🌛": // oops, mirrored (:P), this is good information in a fight :)
+			url = "https://kit.iop.red/emoji/🌜"
+			filename = "https://kit.iop.red/qr.🌜.png"
+		case "🌜":
+			url = "https://kit.iop.red/emoji/🌛"
+			filename = "https://kit.iop.red/qr.🌛.png"
 		case "🚁":
 			url = "https://heliattack.com"
 			filename = "https://kit.iop.red/qr.🚁.png"
@@ -324,6 +333,18 @@ func main() {
 
 	http.HandleFunc("/🌚", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		htmlHandler(w, r, "🌚")
+	}))
+
+	http.HandleFunc("/🌛", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		htmlHandler(w, r, "🌛")
+	}))
+
+	http.HandleFunc("/🌜", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		htmlHandler(w, r, "🌜")
+	}))
+
+	http.HandleFunc("/🏡", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		htmlHandler(w, r, "🏡")
 	}))
 
 	http.HandleFunc("/🧑", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
