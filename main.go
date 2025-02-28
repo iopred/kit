@@ -226,7 +226,7 @@ func main() {
 			url = "https://kit.iop.red/emoji/🌛"
 			filename = "https://kit.iop.red/qr.🌛.png"
 		case "🚁":
-			url = "https://heliattack.com"
+			url = "https://basement.fun/games/heliattack2000"
 			filename = "https://kit.iop.red/qr.🚁.png"
 		case "📼":
 			url = "https://ha2k.heliattack.com"
