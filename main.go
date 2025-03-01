@@ -228,12 +228,21 @@ func main() {
 		case "🚁":
 			url = "https://kit.iop.red/emoji/🚁"
 			filename = "https://kit.iop.red/qr.🚁.png"
+		case "🚁🧑":
+			url = "https://heliattack.com/🚁🧑.png"
+			filename = "https://kit.iop.red/qr.🚁🧑.png"
 		case "🚁🪖":
-			url = "https://basement.fun/games/heliattack2000"
-			filename = "https://kit.iop.red/qr.🚁.png"
+			url = "https://heliattack.com/🚁🪖"
+			filename = "https://kit.iop.red/qr.🚁🪖.png"
+		case "🚁🪖🧑":
+			url = "https://heliattack.com/🚁🧑"
+			filename = "https://kit.iop.red/qr.🚁🧑.png"
 		case "📼":
 			url = "https://ha2k.heliattack.com"
 			filename = "https://kit.iop.red/qr.📼.png"
+		case "🚁🔫":
+			url = "https://heliattack.com/🚁🔫";
+			filename = "https://kit.iop.red/qr.🚁🔫.png"; // Complete the filename assignment
 		}
 
 		err = t.ExecuteTemplate(w, "kit", templateData{Host: host, Port: port, Filename: filename, URL: url})
