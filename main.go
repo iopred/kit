@@ -161,7 +161,7 @@ func main() {
 </head>
 <body>
 <iframe src='{{.URL}}'></iframe>
-<img src='/{{.Filename}}.png' id="qr" onclick="hideElement(this)" style="cursor: pointer;"/>
+<img src='/{{.Filename}}' id="qr" onclick="hideElement(this)" style="cursor: pointer;"/>
 
 <script>
 	function hideElement(element) {
@@ -196,14 +196,16 @@ func main() {
 			fallthrough
 		case "naa.mba":
 			url = "https://naa.mba"
+			// Theres a file for this, handled by fileserver.
 		case "the.keeper":
 			url = "https://www.keeperproject.com.au"
+			// Theres a file for this, handled by fileserver.
 		case "bad.habit":
 			url = "https://badhabitrecords.com.au"
-			filename = "qr.bad.habit"
+			filename = "https://kit.iop.red/qr.bad.habit.png"
 		case "the.presynct":
 			url = "https://www.thepresynct.com.au"
-			filename = "qr.the.presynct"
+			filename = "https://kit.iop.red/qr.the.presynct.png"
 		case "🧑":
 			url = "https://kit.iop.red/emoji/🧑"
 			filename = "https://kit.iop.red/qr.🧑.png"
@@ -226,7 +228,7 @@ func main() {
 			url = "https://kit.iop.red/emoji/🌛"
 			filename = "https://kit.iop.red/qr.🌛.png"
 		case "🚁":
-			url = "https://kit.iop.red/emoji/🚁"
+			url = "https://🚁.heliattack.com"
 			filename = "https://kit.iop.red/qr.🚁.png"
 		case "🚁🧑":
 			url = "https://heliattack.com/🚁🧑.png"
