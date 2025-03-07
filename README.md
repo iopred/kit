@@ -41,6 +41,10 @@ feb 17 2025 {
     🦠👻🚁🏈
 }
 
+mar 7 2025 {
+
+}
+
 ## Overview
 
 kit is a toolkit for making games with an integrated spatial-temporal database. It combines:
@@ -73,31 +77,9 @@ console.log("😄");
 bash
 git clone https://github.com/iopred/kit
 bash
-docker run -v /path/to/kit:/mnt/kit -v /path/to/kat:/mnt/kat kit
-<!-- kit
-node_name {
-property
-is relationship
-has item
-from source
-}
-kit
-kit.observe(parameter)
-kit
-<Speaker>: Message content
-This README now includes:
-Complete installation instructions
-Clear feature overview
-Usage examples
-Component descriptions
-Development information
-Timeline of major updates
-Preserved original poetic and artistic elements
-Would you like me to expand any section further or add additional information? -->
+docker run -v /path/to/kit:/mnt/kit -v /path/to/kat:/mnt/kat "🚁👻🌞🦠🏙️💥⏳🔄🛰️🎛️📡🕶️🔮🔧🌐📜🛠️🤖⚡🎲🌪️🧭🕳️🌀📍🗿🚀🕰️💾🌌⚙️💭🔗🔑🛡️🏗️📊♾️🚦🧩🖥️🎮👾📡🔄🎭💬🚷🛑🔍"
 
-
-
-
-
+Rust: 1.85
+No Dependencies please!
 
 

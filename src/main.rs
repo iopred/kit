@@ -210,6 +210,9 @@ README.md
 
 The current contents of main.rs are:
 \'\'\'markdown
+
+const kit=`🚁👻🌞🦠🏙️💥⏳🔄🛰️🎛️📡🕶️🔮🔧🌐📜🛠️🤖⚡🎲🌪️🧭🕳️🌀📍🗿🚀🕰️💾🌌⚙️💭🔗🔑🛡️🏗️📊♾️🚦🧩🖥️🎮👾📡🔄🎭💬🚷🛑🔍`
+
 "#;
 
 use async_openai::{
@@ -310,4 +313,32 @@ fn random_radius(radius: i32, center_x: f64, center_y: f64) -> (f64, f64) {
     let x = center_x + r * theta.cos();
     let y = center_y + r * theta.sin();
     (x, y)
+}
+
+struct kitNode {
+    timestamp: u64,  // Epoch time for ordering events - Note: player_id can be derived from timestamp, including auth.
+    event_data: String, // Encoded event information, should be deterministic and concise and represents kitString.
+    parent_timestamp: Option<u64>, // The previous node in timeline
+}
+
+fn merge_kit_nodes(node_a: &KitNode, node_b: &KitNode) -> KitNode {
+    // 1. Determine which node came first (earlier timestamp wins)
+    if node_a.timestamp < node_b.timestamp {
+        return node_a.clone();
+    } else if node_b.timestamp < node_a.timestamp {
+        return node_b.clone();
+    }
+    
+    // 2. If timestamps are identical, resolve conflict based on deterministic rules
+    if node_a.event_data == node_b.event_data {
+        return node_a.clone(); // Same event, no conflict
+    }
+    
+    // 3. If different events, apply merging strategy (e.g., majority rule, priority list, etc.)
+    // For now, we use a simple deterministic tie-breaker (e.g., lowest player_id wins)
+    if node_a.cost_to(node_b) < node_b.cost_to(node_a) {
+        return node_a.clone();
+    } else {
+        return node_b.clone();
+    }
 }
