@@ -30,6 +30,7 @@ fn main() {
             Entity { id: '🌞', states: vec!["🌞💥⚡".to_string()] },
             Entity { id: '🦠', states: vec!["🦠🌝".to_string()] },
             Entity { id: '🏙️', states: vec!["🏙️".to_string()] },
+            Entity { id: '🛰️', states: vec!["📡🔄".to_string()] }, // New entity added
         ],
         timeline: vec![],
         multiverse: vec![Universe {
@@ -40,12 +41,14 @@ fn main() {
                 Entity { id: '🌞', states: vec!["🌞💥⚡".to_string()] },
                 Entity { id: '🦠', states: vec!["🦠🌝".to_string()] },
                 Entity { id: '🏙️', states: vec!["🏙️".to_string()] },
+                Entity { id: '🛰️', states: vec!["📡🔄".to_string()] },
             ],
             observers: vec!['👻'],
         }],
     };
     
     run_simulation(&mut simulation);
+    print_source();
 }
 
 fn run_simulation(sim: &mut Simulation) {
@@ -55,7 +58,6 @@ fn run_simulation(sim: &mut Simulation) {
                 println!("⛔ Timeline disturbance detected in universe {}! Collision between {} and {}!", 
                          universe.id, universe.entities[i - 1].id, universe.entities[i].id);
                 println!("🔍 Causal agent identified: {}", universe.entities[i - 1].id);
-                panic!("🚨 Simulation halted due to timeline disturbance!");
                 branch_universe(sim, universe.id, universe.entities[i - 1].id);
             }
         }
@@ -77,4 +79,9 @@ fn branch_universe(sim: &mut Simulation, parent_id: usize, cause: char) {
     };
     println!("🌌 Branching new universe {} due to {}", new_id, cause);
     sim.multiverse.push(new_universe);
+}
+
+fn print_source() {
+    let source = std::fs::read_to_string(file!()).expect("Failed to read source code");
+    println!("\nQuine Output:\n\n{}", source);
 }
