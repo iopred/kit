@@ -29,7 +29,7 @@ fn main() {
             Entity { id: '🚁', states: vec!["🔼💨⏳".to_string()] },
             Entity { id: '🌞', states: vec!["🌞💥⚡".to_string()] },
             Entity { id: '🦠', states: vec!["🦠🌝".to_string()] },
-            Entity { id: '🏙️', states: vec!["🏙️👀".to_string()] },
+            Entity { id: '🏙️', states: vec!["🏙️".to_string()] },
         ],
         timeline: vec![],
         multiverse: vec![Universe {
@@ -39,9 +39,9 @@ fn main() {
                 Entity { id: '🚁', states: vec!["🔼💨⏳".to_string()] },
                 Entity { id: '🌞', states: vec!["🌞💥⚡".to_string()] },
                 Entity { id: '🦠', states: vec!["🦠🌝".to_string()] },
-                Entity { id: '🏙️', states: vec!["🏙️👀".to_string()] },
+                Entity { id: '🏙️', states: vec!["🏙️".to_string()] },
             ],
-            observers: vec!['🏙️'],
+            observers: vec!['👻'],
         }],
     };
     
@@ -55,6 +55,7 @@ fn run_simulation(sim: &mut Simulation) {
                 println!("⛔ Timeline disturbance detected in universe {}! Collision between {} and {}!", 
                          universe.id, universe.entities[i - 1].id, universe.entities[i].id);
                 println!("🔍 Causal agent identified: {}", universe.entities[i - 1].id);
+                panic!("🚨 Simulation halted due to timeline disturbance!");
                 branch_universe(sim, universe.id, universe.entities[i - 1].id);
             }
         }
