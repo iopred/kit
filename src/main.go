@@ -7,176 +7,150 @@ import (
 	"strings"
 	"text/template"
 
+	"context"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"os"
+	"os/signal"
+	"path/filepath"
+	"strconv"
+	"strings"
+	"syscall"
+	"text/template"
+
+	"github.com/gorilla/websocket"
+	"github.com/joho/godotenv"
 	"github.com/pkg/errors"
 	"github.com/skip2/go-qrcode"
 )
 
-func main() {
-	var kit Node
-	if kit, err := loadKit(); err == nil {
-		if err := generateQR("qr.kit.png", "https://kit.iop.red"); err != nil {
-			fmt.Errorf("%w", errors.WithStack(err))
-		}
+var emojiMetadata map[string]string
 
-		if err := generateQR("qr.k.png", "kit.iop.red/k"); err != nil {
-			fmt.Errorf("%w", errors.WithStack(err))
+func init() {
+	emojiMetadata = make(map[string]string)
+	err := filepath.Walk("./emoji", func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
 		}
+		if !info.IsDir() && info.Name() == "metadata.json" {
+			data, err := os.ReadFile(path)
+			if err != nil {
+				return err
+			}
+			var metadata struct {
+				Glyph            string   `json:"glyph"`
+				CLDR             string   `json:"cldr"`
+				UnicodeSkinTones []string `json:"unicodeSkintones"`
+			}
+			if err := json.Unmarshal(data, &metadata); err != nil {
+				return err
+			}
 
-		if err := generateQR("qr.i.png", "kit.iop.red/i"); err != nil {
-			fmt.Errorf("%w", errors.WithStack(err))
-		}
+			metadata.CLDR = strings.ToLower(strings.ReplaceAll(metadata.CLDR, " ", "_"))
 
-		if err := generateQR("qr.t.png", "kit.iop.red/t"); err != nil {
-			fmt.Errorf("%w", errors.WithStack(err))
+			if len(metadata.UnicodeSkinTones) > 0 {
+				emojiMetadata[metadata.Glyph] = filepath.Join(filepath.Dir(path), "Default/3D/", metadata.CLDR+"_3d_default.png")
+			} else {
+				emojiMetadata[metadata.Glyph] = filepath.Join(filepath.Dir(path), "3D/", metadata.CLDR+"_3d.png")
+			}
 		}
+		return nil
+	})
+	if err != nil {
+		panic(fmt.Errorf("error loading emoji metadata: %w", errors.WithStack(err)))
+	}
+}
 
-		if err := generateQR("qr.21.png", "kit.iop.red/21"); err != nil {
-			fmt.Errorf("%w", errors.WithStack(err))
-		}
+func emojiHandler(w http.ResponseWriter, r *http.Request, emoji string) {
+	// Maybe check that the emoji is a rune?
 
-		if err := generateQR("qr.81.21.png", "kit.iop.red/81.21"); err != nil {
-			fmt.Errorf("%w", errors.WithStack(err))
-		}
-
-		if err := generateQR("qr.r.png", "kit.iop.red/r"); err != nil {
-			fmt.Errorf("%w", errors.WithStack(err))
-		}
-
-		if err := generateQR("qr.g.png", "https://qr.kit.iop.red./"+kit.now()); err != nil {
-			fmt.Errorf("%w", errors.WithStack(err))
-		}
-
-		if err := generateQR("qr.t.png", "https://qr.kit.iop.red./"+kit.next()); err != nil {
-			fmt.Errorf("%w", errors.WithStack(err))
-		}
-
-		if err := generateQR("qr.kit.iop.red.png", "https://kit.iop.red:3242/qr.kit.iop.red"); err != nil {
-			fmt.Errorf("%w", errors.WithStack(err))
-		}
-
-		if err := generateQR("qr.description.kit.png", "there is a yellow smiley face with a big smile on it"); err != nil {
-			fmt.Errorf("%w", errors.WithStack(err))
-		}
-
-		if err := generateQR("qr.ufo.naa.mba.png", "https://ufo.naa.mba"); err != nil {
-			fmt.Errorf("%w", errors.WithStack(err))
-		}
-
-		if err := generateQR("qr.naa.mba.png", "https://naa.mba"); err != nil {
-			fmt.Errorf("%w", errors.WithStack(err))
-		}
-
-		if err := generateQR("qr.the.keeper.png", "https://www.keeperproject.com.au/"); err != nil {
-			fmt.Errorf("%w", errors.WithStack(err))
-		}
+	if path, ok := emojiMetadata[emoji]; ok {
+		fmt.Println("serving ", emoji, " :", path)
+		http.ServeFile(w, r, path)
 	} else {
-		panic(fmt.Errorf("%w", errors.WithStack(err)))
+		http.Error(w, "Emoji not found", http.StatusNotFound)
+	}
+}
+
+func main() {
+	// Create a context that listens for interrupt signals
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	// Channel to listen for OS signals
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+
+	go func() {
+		<-sigChan
+		fmt.Println("Received interrupt signal, shutting down...")
+		cancel() // Cancel the context to signal shutdown
+	}()
+
+	// Load .env file
+	err := godotenv.Load()
+	if err != nil {
+		panic(fmt.Errorf("error loading .env file: %w", errors.WithStack(err)))
+	}
+
+	if kit, err := loadKit(); err == nil {
+		fmt.Println(kit.now(), "->", kit.next())
+	} else {
+		panic(fmt.Errorf("error loading kit: %w", errors.WithStack(err)))
+	}
+
+	// Check for command-line arguments
+	if len(os.Args) > 1 {
+		// todo merge with the emoji image.
+		emoji := string(os.Args[1][0])           // Get the first character of the first argument
+		filename := fmt.Sprintf("%s.png", emoji) // Create the filename
+		if err := generateQR(filename, emoji); err != nil {
+			fmt.Printf("Error generating QR code: %v\n", err)
+			os.Exit(1)
+		}
+		return // Exit after generating the QR code
 	}
 
 	port := 3242
-	host := "naa.mba"
-	filename := "ufo.png"
+	host := os.Getenv("HOST")
+	if host == "" {
+		host = "localhost"
+	}
+	if portStr := os.Getenv("PORT"); portStr != "" {
+		if portParsed, err := strconv.Atoi(portStr); err == nil {
+			port = portParsed
+		}
+	}
 
 	type templateData struct {
 		Host     string
 		Port     int
 		Filename string
-	}
-
-	generateQR("localhost.png", fmt.Sprintf("http://localhost:%d/", port))
-
-	if err := generateQR("localhost.qr.kit.png", fmt.Sprintf("http://localhost:%d/qr.kit", port)); err != nil {
-		fmt.Errorf("%w", errors.WithStack(err))
-	}
-
-	kitHandler := func(w http.ResponseWriter, r *http.Request) {
-		html := `
-<html>
-<head>
-	<style>
-		* {
-			margin: 0;
-			padding: 0;
-		}
-		div {
-			display: inline-grid;
-			grid-template-areas:
-				"r g b t"
-				"a k k k"
-				"d k k k"
-				"d k k k";
-			place-self: center;
-			// background-image: url('kit.png');
-			// background-repeat: no-repeat;
-		}
-		div > * {
-			mix-blend-mode: multiply;
-		}
-		span,
-		iframe {
-			border: 0px;
-		}
-		#k {
-			grid-area: k;
-		}
-	</style>
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
-</head>
-<body>
-<div> <!- tl, br ->
-	<img id="r" src="http://{{.Host}}:{{.Port}}/r.png">
-	<span>// three.js</span>
-	<img id="k" src='http://{{.Host}}:{{.Port}}/qr.kit.iop.red.png'/>
-</div>
-</body>
-</html>`
-
-		t, err := template.New("foo").Parse(fmt.Sprintf(`{{define "kit"}}%s{{end}}`, html))
-		if err != nil {
-			panic("undefined")
-		}
-
-		err = t.ExecuteTemplate(w, "kit", templateData{Host: host, Port: port, Filename: filename})
-		if err != nil {
-			panic("undefined")
-		}
-
+		URL      string
 	}
 
 	htmlHandler := func(w http.ResponseWriter, r *http.Request, filename string) {
 		fmt.Println("html", filename)
 
-		if filename == "qr.kit.iop.red" {
-			kitHandler(w, r)
-			return
-		}
-
 		type templateData struct {
 			Host     string
 			Port     int
 			Filename string
+			URL      string
 		}
 
 		htmlt := `
+<!DOCTYPE html>
 <html>
-<!- kit ->
+<!-- kit -->
 <head>
 	<style>
 		* {
 			margin: 0;
 			padding: 0;
 		}
-		div {
-			display: inline-grid;
-			grid-template-areas:
-				"r g b t"
-				"a k k k"
-				"d k k k"
-				"d k k k";
-			place-self: center;
-			// background-image: url('kit.png');
-			// background-repeat: no-repeat;
-		}
+
 		iframe {
 			position: absolute;
 			width: 100%;
@@ -193,10 +167,14 @@ func main() {
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 </head>
 <body>
-<div> <!-- tl, br -->
-	<iframe src='{{.Filename}}.png'/>
-	<img src='/qr.{{.Filename}}.png'/>
-</div>
+<iframe src='{{.URL}}'></iframe>
+<img src='/{{.Filename}}' id="qr" onclick="hideElement(this)" style="cursor: pointer;"/>
+
+<script>
+	function hideElement(element) {
+		element.style.display = 'none';
+	}
+</script>
 </body>
 </html>`
 
@@ -204,7 +182,79 @@ func main() {
 		if err != nil {
 			panic("undefined")
 		}
-		err = t.ExecuteTemplate(w, "kit", templateData{Host: host, Port: port, Filename: filename})
+
+		url := filename
+		switch filename {
+		case "heliattack":
+			url = "https://heliattack.com"
+			filename = "ha2000"
+		case "heliattack2000":
+			fallthrough
+		case "ha2k":
+			fallthrough
+		case "ha2000":
+			url = "https://ha2k.heliattack.com"
+			filename = "ha2000"
+		case "ufo":
+			fallthrough
+		case "ufo.naa.mba":
+			url = "https://ufo.naa.mba"
+		case "naamba":
+			fallthrough
+		case "naa.mba":
+			url = "https://naa.mba"
+			// Theres a file for this, handled by fileserver.
+		case "the.keeper":
+			url = "https://www.keeperproject.com.au"
+			// Theres a file for this, handled by fileserver.
+		case "bad.habit":
+			url = "https://badhabitrecords.com.au"
+			filename = "https://kit.iop.red/qr.bad.habit.png"
+		case "the.presynct":
+			url = "https://www.thepresynct.com.au"
+			filename = "https://kit.iop.red/qr.the.presynct.png"
+		case "🧑":
+			url = "https://kit.iop.red/emoji/🧑"
+			filename = "https://kit.iop.red/qr.🧑.png"
+		case "🏡":
+			url = "https://kit.iop.red/emoji/🏡"
+			filename = "https://kit.iop.red/qr.🏡.png"
+		case "🌞":
+			url = "https://kit.iop.red/emoji/🌞"
+			filename = "https://kit.iop.red/qr.🌞.png"
+		case "🌝":
+			url = "https://kit.iop.red/emoji/🌝"
+			filename = "https://kit.iop.red/qr.🌝.png"
+		case "🌚":
+			url = "https://kit.iop.red/emoji/🌚"
+			filename = "https://kit.iop.red/qr.🌚.png"
+		case "🌛": // oops, mirrored (:P), this is good information in a fight :)
+			url = "https://kit.iop.red/emoji/🌜"
+			filename = "https://kit.iop.red/qr.🌜.png"
+		case "🌜":
+			url = "https://kit.iop.red/emoji/🌛"
+			filename = "https://kit.iop.red/qr.🌛.png"
+		case "🚁":
+			url = "https://🚁.heliattack.com"
+			filename = "https://kit.iop.red/qr.🚁.png"
+		case "🚁🧑":
+			url = "https://heliattack.com/🚁🧑.png"
+			filename = "https://kit.iop.red/qr.🚁🧑.png"
+		case "🚁🪖":
+			url = "https://heliattack.com/🚁🪖"
+			filename = "https://kit.iop.red/qr.🚁🪖.png"
+		case "🚁🪖🧑":
+			url = "https://heliattack.com/🚁🧑"
+			filename = "https://kit.iop.red/qr.🚁🧑.png"
+		case "📼":
+			url = "https://kit.iop.red/emoji/📼"
+			filename = "https://kit.iop.red/qr.📼.png"
+		case "🚁🔫":
+			url = "https://heliattack.com/🚁🔫"
+			filename = "https://kit.iop.red/qr.🚁🔫.png" // Complete the filename assignment
+		}
+
+		err = t.ExecuteTemplate(w, "kit", templateData{Host: host, Port: port, Filename: filename, URL: url})
 		if err != nil {
 			panic("undefined")
 		}
@@ -212,8 +262,14 @@ func main() {
 	}
 
 	pngHandler := func(w http.ResponseWriter, r *http.Request, filename string) {
-		filename = strings.trim(filename, ".png")
 		fmt.Println("png", filename)
+
+		filename = strings.Trim(filename, ".png")
+
+		if filename == "📼" {
+			filename = "tape"
+		}
+
 		qrCode, _ := qrcode.New(filename, qrcode.Low)
 		if err := qrCode.Write(11, w); err != nil {
 			fmt.Errorf("error creating qr code: %w\n", errors.WithStack(err))
@@ -250,6 +306,7 @@ func main() {
 				if strings.HasPrefix(filename, "qr.") {
 					pngHandler(w, r, "https://naa.mba/"+strings.Trim(filename, "qr.")+".png")
 				} else {
+					fmt.Println("serving", filename+".png")
 					http.ServeFile(w, r, filename+".png")
 				}
 			case "html":
@@ -259,19 +316,114 @@ func main() {
 		},
 	)
 
-	http.HandleFunc("/ws", emojiWebSocketHandler)
+	http.HandleFunc("/ufo.naa.mba", func(w http.ResponseWriter, r *http.Request) {
+		htmlHandler(w, r, "ufo.naa.mba")
+	})
 
-	fmt.Println(kit.now())
+	http.HandleFunc("/naa.mba", func(w http.ResponseWriter, r *http.Request) {
+		htmlHandler(w, r, "naa.mba")
+	})
 
-	err := http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
-	if errors.Is(err, http.ErrServerClosed) {
-		fmt.Errorf("server closed\n")
-	} else if err != nil {
-		fmt.Errorf("error starting server: %w\n", errors.WithStack(err))
-		os.Exit(1)
+	http.HandleFunc("/ufo", func(w http.ResponseWriter, r *http.Request) {
+		htmlHandler(w, r, "ufo")
+	})
+
+	http.HandleFunc("/kit.png", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "kit.png")
+	}))
+
+	http.HandleFunc("/the.keeper", func(w http.ResponseWriter, r *http.Request) {
+		htmlHandler(w, r, "the.keeper")
+	})
+
+	http.HandleFunc("/bad.habit", func(w http.ResponseWriter, r *http.Request) {
+		htmlHandler(w, r, "bad.habit")
+	})
+
+	http.HandleFunc("/the.presynct", func(w http.ResponseWriter, r *http.Request) {
+		htmlHandler(w, r, "the.presynct")
+	})
+
+	http.HandleFunc("/🌝", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		htmlHandler(w, r, "🌝")
+	}))
+
+	http.HandleFunc("/🌚", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		htmlHandler(w, r, "🌚")
+	}))
+
+	http.HandleFunc("/🌛", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		htmlHandler(w, r, "🌛")
+	}))
+
+	http.HandleFunc("/🌜", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		htmlHandler(w, r, "🌜")
+	}))
+
+	http.HandleFunc("/🏡", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		htmlHandler(w, r, "🏡")
+	}))
+
+	http.HandleFunc("/🧑", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		htmlHandler(w, r, "🧑")
+	}))
+
+	http.HandleFunc("/🚁", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		htmlHandler(w, r, "🚁")
+	}))
+
+	http.HandleFunc("/📼", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		htmlHandler(w, r, "📼")
+	}))
+
+	http.HandleFunc("/🖭", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		htmlHandler(w, r, "📼")
+	}))
+
+	// Todo, test and verify refactor
+	// http.Handle("/emoji/", corsMiddleware(http.StripPrefix("/emoji/", http.FileServer(http.Dir("emoji")))))
+
+	http.HandleFunc("/emoji/", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		emojiHandler(w, r, r.URL.Path[len("/emoji/"):])
+	}))
+
+	http.HandleFunc("/🌞", emojiWebSocketHandler)
+
+	srv := &http.Server{
+		Addr: fmt.Sprintf(":%d", port),
 	}
 
-	fmt.Println("exiting")
+	go func() {
+		err = http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
+		if errors.Is(err, http.ErrServerClosed) {
+			fmt.Println("server closed")
+		} else if err != nil {
+			fmt.Println("error starting server: %w", errors.WithStack(err))
+			os.Exit(1)
+		}
+	}()
+
+	<-ctx.Done()
+
+	if err := srv.Shutdown(context.Background()); err != nil {
+		fmt.Println("server shutdown failed: %w", err)
+	}
+}
+
+func corsMiddleware(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		origin := r.Header.Get("Origin")
+		if strings.HasSuffix(origin, ".heliattack.com") {
+			w.Header().Set("Access-Control-Allow-Origin", origin)
+		}
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+		next(w, r)
+	}
 }
 
 func generateQR(filename, url string) error {
@@ -283,15 +435,7 @@ func generateQR(filename, url string) error {
 	return nil
 }
 
-package main
-
-import (
-	"encoding/json"
-	"fmt"
-	"net/http"
-	"strings"
-	"github.com/gorilla/websocket"
-)
+const kit = "🚁👻🌞🦠🏙️💥⏳🔄🛰️🎛️📡🕶️🔮🔧🌐📜🛠️🤖⚡🎲🌪️🧭🕳️🌀📍🗿🚀🕰️💾🌌⚙️💭🔗🔑🛡️🏗️📊♾️🚦🧩🖥️🎮👾📡🔄🎭💬🚷🛑🔍"
 
 var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
@@ -341,7 +485,13 @@ func emojiWebSocketHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getEmojiForFrame(frame int, universe string) string {
-	return "🚁👻🌞🦠🏙️💥⏳🔄🛰️🎛️📡🕶️🔮🔧🌐📜🛠️🤖⚡🎲🌪️🧭🕳️🌀📍🗿🚀🕰️💾🌌⚙️💭🔗🔑🛡️🏗️📊♾️🚦🧩🖥️🎮👾📡🔄🎭💬🚷🛑🔍"
+	for index, runeValue := range kit {
+		fmt.Printf("%#U starts at byte position %d\n", runeValue, index)
+		if index == (frame%60)%len(kit) {
+			return string(runeValue)
+		}
+	}
+	return "🌞"
 }
 
 type Node struct {
