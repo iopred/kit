@@ -40,6 +40,7 @@ fn run_simulation(sim: &mut Simulation) {
 }
 
 fn is_collision(entity1: &Entity, entity2: &Entity) -> bool {
-    let entity2_is_matter = entity2.state == "🦠⚠️" || entity2.state == "🏙️👀";
+    let non_matter_entities = vec!['👻']; // Define non-material entities
+    let entity2_is_matter = !non_matter_entities.contains(&entity2.id); // All else is matter
     entity1.id == '🚁' && entity2_is_matter // Helicopter collides with matter
 }
