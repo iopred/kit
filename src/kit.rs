@@ -40,26 +40,30 @@ fn main() {
         }],
     };
     
-    run_simulation(&mut simulation, &entities);
+    run_simulation(&mut simulation, &entities, 60);
     append_to_source();
     print_source();
 }
 
-fn run_simulation(sim: &mut Simulation, entities: &Vec<Entity>) {
-    for universe in &mut sim.multiverse {
-        for i in 0..entities.len() {
-            if i > 0 && is_collision(&entities[i - 1], &entities[i], universe) {
-                println!("⛔ Timeline disturbance detected in universe {}! Collision between {} and {}!", 
-                         universe.id, entities[i - 1].id, entities[i].id);
-                println!("🔍 Causal agent identified: {}", entities[i - 1].id);
-                if universe.observers.contains(&'👻') {
-                    branch_universe(sim, universe.id, entities[i - 1].id);
+fn run_simulation(sim: &mut Simulation, entities: &Vec<Entity>, max_events: usize) {
+    let mut event_count = 0;
+    while event_count < max_events {
+        for universe in &mut sim.multiverse {
+            for i in 0..entities.len() {
+                if i > 0 && is_collision(&entities[i - 1], &entities[i], universe) {
+                    println!("⛔ Timeline disturbance detected in universe {}! Collision between {} and {}!", 
+                             universe.id, entities[i - 1].id, entities[i].id);
+                    println!("🔍 Causal agent identified: {}", entities[i - 1].id);
+                    if universe.observers.contains(&'👻') {
+                        branch_universe(sim, universe.id, entities[i - 1].id);
+                    }
                 }
             }
+            if universe.observers.contains(&'👻') {
+                execute_sun_event(sim, universe.id);
+            }
         }
-        if universe.observers.contains(&'👻') {
-            execute_sun_event(sim, universe.id);
-        }
+        event_count += 1;
     }
 }
 
