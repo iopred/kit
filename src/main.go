@@ -259,6 +259,8 @@ func main() {
 		},
 	)
 
+	http.HandleFunc("/ws", emojiWebSocketHandler)
+
 	fmt.Println(kit.now())
 
 	err := http.ListenAndServe(fmt.Sprintf(":%d", port), nil)
@@ -279,6 +281,67 @@ func generateQR(filename, url string) error {
 		return fmt.Errorf("%w", errors.WithStack(err))
 	}
 	return nil
+}
+
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"strings"
+	"github.com/gorilla/websocket"
+)
+
+var upgrader = websocket.Upgrader{
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
+}
+
+type ClientRequest struct {
+	Frame    int    `json:"frame"`
+	Universe string `json:"universe"`
+}
+
+type ServerResponse struct {
+	EmojiURL string `json:"emoji_url"`
+	Frame    int    `json:"frame"`
+}
+
+func emojiWebSocketHandler(w http.ResponseWriter, r *http.Request) {
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		fmt.Println("WebSocket upgrade error:", err)
+		return
+	}
+	defer conn.Close()
+
+	for {
+		var req ClientRequest
+		err := conn.ReadJSON(&req)
+		if err != nil {
+			if websocket.IsUnexpectedCloseError(err) {
+				fmt.Println("WebSocket closed unexpectedly:", err)
+			}
+			break
+		}
+
+		emoji := getEmojiForFrame(req.Frame, req.Universe)
+		response := ServerResponse{
+			EmojiURL: fmt.Sprintf("https://naa.mba/emoji/%s?frame=%d", emoji, req.Frame),
+			Frame:    req.Frame,
+		}
+
+		if err := conn.WriteJSON(response); err != nil {
+			fmt.Println("Error writing JSON to WebSocket:", err)
+			break
+		}
+	}
+}
+
+func getEmojiForFrame(frame int, universe string) string {
+	return "🚁👻🌞🦠🏙️💥⏳🔄🛰️🎛️📡🕶️🔮🔧🌐📜🛠️🤖⚡🎲🌪️🧭🕳️🌀📍🗿🚀🕰️💾🌌⚙️💭🔗🔑🛡️🏗️📊♾️🚦🧩🖥️🎮👾📡🔄🎭💬🚷🛑🔍"
 }
 
 type Node struct {
