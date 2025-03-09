@@ -191,15 +191,16 @@ func main() {
 		case "ufo":
 			fallthrough
 		case "ufo.naa.mba":
+			filename = "https://kit.iop.red/qr.🛸.png"
 			url = "https://ufo.naa.mba"
 		case "naamba":
 			fallthrough
 		case "naa.mba":
+			filename = "naamba.png"
 			url = "https://naa.mba"
-			// Theres a file for this, handled by fileserver.
 		case "the.keeper":
 			url = "https://www.keeperproject.com.au"
-			// Theres a file for this, handled by fileserver.
+			filename = "https://kit.iop.red/the.keeper.png"
 		case "bad.habit":
 			url = "https://badhabitrecords.com.au"
 			filename = "https://kit.iop.red/qr.bad.habit.png"
@@ -227,6 +228,9 @@ func main() {
 		case "🌜":
 			url = "https://kit.iop.red/emoji/🌛"
 			filename = "https://kit.iop.red/qr.🌛.png"
+		case "📼":
+			url = "https://kit.iop.red/tape.png"
+			filename = "https://kit.iop.red/qr.📼.png"
 		case "🚁":
 			url = "https://🚁.heliattack.com"
 			filename = "https://kit.iop.red/qr.🚁.png"
@@ -237,14 +241,11 @@ func main() {
 			url = "https://heliattack.com/🚁🪖"
 			filename = "https://kit.iop.red/qr.🚁🪖.png"
 		case "🚁🪖🧑":
-			url = "https://heliattack.com/🚁🧑"
-			filename = "https://kit.iop.red/qr.🚁🧑.png"
-		case "📼":
-			url = "https://kit.iop.red/emoji/📼"
-			filename = "https://kit.iop.red/qr.📼.png"
+			url = "https://heliattack.com/🚁🪖🧑"
+			filename = "https://kit.iop.red/qr.🚁🪖🧑.png"
 		case "🚁🔫":
 			url = "https://heliattack.com/🚁🔫";
-			filename = "https://kit.iop.red/qr.🚁🔫.png"; // Complete the filename assignment
+			filename = "https://kit.iop.red/qr.🚁🔫.png";
 		}
 
 		err = t.ExecuteTemplate(w, "kit", templateData{Host: host, Port: port, Filename: filename, URL: url})
@@ -289,7 +290,7 @@ func main() {
 			}
 
 			if filename == "" && filetype == "" {
-				filename = "kit.iop.red"
+				filename = "🌞"
 			}
 
 			switch filetype {
