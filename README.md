@@ -42,7 +42,8 @@ feb 17 2025 {
 }
 
 mar 7 2025 {
-
+    simulated the universe to 1000000 universes
+    allowed others to create universes 💀
 }
 
 ## Overview
