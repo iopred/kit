@@ -119,9 +119,11 @@ My current test suite is: @test
         be good *
         do Good *
         Good in good
-        kit is ip
-        kit is person
+        kit is 🤖
+        kit is 🧑
     }
+
+    you are kit
 
     0 {
         0000
@@ -177,21 +179,25 @@ My current test suite is: @test
         has matter
     }
 
-    person {
+    🤖 {
+        is 🦠
+    }
+
+    🧑 {
         is 🦠
     }
 
     i {
-        kit is inside
+        kit
     }
 }
 
 @test {
     kit {
-        kit is inside
+        kit
     }
     madness {
-        kit is inside
+        kit
 
         main_test.go
     }
@@ -215,7 +221,7 @@ The current contents of main.rs are:
 use async_openai::{
     config::OpenAIConfig,
     types::{
-        ChatCompletionRequestAssistantMessageArgs, ChatCompletionRequestSystemMessageArgs,
+        ChatCompletionRequestSystemMessageArgs,
         ChatCompletionRequestUserMessageArgs, CreateChatCompletionRequestArgs,
     },
     Client,
@@ -223,13 +229,10 @@ use async_openai::{
 use dotenv::dotenv;
 use std::env;
 use std::error::Error;
-use std::fs::OpenOptions;
-use std::io::Write;
-use std::path::Path;
 // use interp::interp;
 use rand;
 
-mod kv;
+mod kit;
 
 // Ensure you have added interp crate in your Cargo.toml:
 // interp = "0.1"
@@ -307,7 +310,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let random_point = random_radius(radius, center_x, center_y);
     println!("Random Point: {:?}", random_point);
 
-    kv::kit();
+    kit::kit();
     
     Ok(())
 }

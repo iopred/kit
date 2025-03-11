@@ -1,9 +1,6 @@
-mod kit;
+mod kv;
 
-use self::KitValue::kv;
-
-// [🌌] Self-replicating entity evolves [🌌🌞]
-// use kit::KitValue;
+use kv::KitValue;
 
 struct Simulation {
     entities: Vec<Entity>,
@@ -29,9 +26,9 @@ struct Universe {
     observers: Vec<KitValue>, // Entities that can observe this universe
 }
 
-pub fn kit() -> KitValue {
+pub(crate) fn kit() -> KitValue {
     let entities = vec![
-        Entity { id: KitValue::String("👻".to_string()), states: vec![KitValue::String("🌌".to_string())] },    
+        Entity { id: KitValue::String("👻".to_string()), states: vec![KitValue::String("🌌".to_string())] },
         Entity { id: KitValue::String("🚁".to_string()), states: vec![KitValue::String("🔼💨⏳".to_string())] },
         Entity { id: KitValue::String("🌞".to_string()), states: vec![KitValue::String("🌚".to_string())] },
         Entity { id: KitValue::String("🦠".to_string()), states: vec![KitValue::String("🦠🌝".to_string())] },
@@ -44,7 +41,7 @@ pub fn kit() -> KitValue {
         timeline: vec![],
         multiverse: vec![Universe {
             id: KitValue::Number(0.0),
-            observers: vec![cause.clone(), KitValue::String("👻".to_string())],
+            observers: vec![KitValue::String("👻".to_string())],
         }],
     };
     
@@ -52,7 +49,6 @@ pub fn kit() -> KitValue {
     append_to_source(&mut simulation);
     print_source();
 
-    //🌌
     let mut kit_string = String::new();
     for entity in entities {
         kit_string.push_str(&format!("{:?}\n", entity));

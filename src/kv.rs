@@ -1,5 +1,3 @@
-pub mod kit;
-
 #[derive(Clone, Debug)]
 pub enum KitValue {
     String(String),
