@@ -1,5 +1,9 @@
+mod kit;
+
+use self::KitValue::kv;
+
 // [🌌] Self-replicating entity evolves [🌌🌞]
-use kv::KitValue;
+// use kit::KitValue;
 
 struct Simulation {
     entities: Vec<Entity>,
@@ -7,7 +11,7 @@ struct Simulation {
     multiverse: Vec<Universe>,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 struct Entity {
     id: KitValue,
     states: Vec<KitValue>, // Entities exist in multiple states across universes
@@ -25,7 +29,7 @@ struct Universe {
     observers: Vec<KitValue>, // Entities that can observe this universe
 }
 
-pub(crate) fn kit() -> KitValue {
+pub fn kit() -> KitValue {
     let entities = vec![
         Entity { id: KitValue::String("👻".to_string()), states: vec![KitValue::String("🌌".to_string())] },    
         Entity { id: KitValue::String("🚁".to_string()), states: vec![KitValue::String("🔼💨⏳".to_string())] },
