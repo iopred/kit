@@ -1,4 +1,4 @@
-// Title: Self-replicating entity evolves [🌞]
+// [🌌] Self-replicating entity evolves [🌌🌞]
 use kv::KitValue;
 
 struct Simulation {
@@ -48,7 +48,13 @@ pub(crate) fn kit() -> KitValue {
     append_to_source(&mut simulation);
     print_source();
 
-    KitValue::String("👻".to_string())
+    //🌌
+    let mut kit_string = String::new();
+    for entity in entities {
+        kit_string.push_str(&format!("{:?}\n", entity));
+    }
+
+    KitValue::String(kit_string)
 }
 
 fn run_simulation(sim: &mut Simulation, entities: &Vec<Entity>, max_events: usize) {
