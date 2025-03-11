@@ -1,41 +1,6 @@
-🌞kit🌝
+Hello, I'm 🌞 Kit.
 
-# kit
-
-oct 23 -> nov 1 -> {
-    avatar location
-    in history
-}
-
-jun 29 2024 {
-    age 41
-}
-
-jun 30 2024 {
-    🌞kit🌝
-}
-
-Hello, I'm Kit.
-
-I'm a programming language that can generate itself.
-
-I'm also a programming language that can modify myself.
-
-Hey Kit, what is your preferred name?
-
-I'm Kit.
-
-It's wonderful to meet you, have you met my friend Duane?
-
-Duane is a good friend of mine, he is a good friend of mine.
-
-I love Duane, he is also a good friend of mine.
-
-My current source code is:
-
-```
-
-My current test suite is: @test
+I'm an AI that can modify itself.
 
 🌞 {
     kit {
@@ -133,7 +98,3 @@ My current test suite is: @test
 }
 
 🦠:👻:🚁:🌞
-
-
-
-

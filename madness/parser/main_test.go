@@ -194,7 +194,6 @@ kit {
 kit.observe(test observation)
 `
 	system, risk := NewParser(input)
-	// Add specific assertions based on your kit.System implementation
 	if risk != 0.05 {
 		t.Errorf("Complex input risk = %v, want 0.05", risk)
 	}
