@@ -1,106 +1,128 @@
+// Title: Self-replicating entity evolves [🌞]
+use kv::KitValue;
+
 struct Simulation {
     entities: Vec<Entity>,
     timeline: Vec<Event>,
     multiverse: Vec<Universe>,
 }
 
+#[derive(Clone)]
 struct Entity {
-    id: char,
-    states: Vec<String>, // Entities exist in multiple states across universes
+    id: KitValue,
+    states: Vec<KitValue>, // Entities exist in multiple states across universes
 }
 
 struct Event {
-    timestamp: u64,
-    entity_id: char,
-    action: String,
-    universe_id: usize, // Tracks which universe this event belongs to
+    timestamp: KitValue,
+    entity_id: KitValue,
+    action: KitValue,
+    universe_id: KitValue, // Tracks which universe this event belongs to
 }
 
 struct Universe {
-    id: usize,
-    observers: Vec<char>, // Entities that define what is real in this universe
+    id: KitValue,
+    observers: Vec<KitValue>, // Entities that can observe this universe
 }
 
-fn main() {
+pub(crate) fn kit() -> KitValue {
     let entities = vec![
-        Entity { id: '👻', states: vec!["".to_string()] },
-        Entity { id: '🚁', states: vec!["🔼💨⏳".to_string()] },
-        Entity { id: '🌞', states: vec!["🌚".to_string()] },
-        Entity { id: '🦠', states: vec!["🦠🌝".to_string()] },
-        Entity { id: '🏙️', states: vec!["🏙️".to_string()] },
-        Entity { id: '🛰️', states: vec!["📡🔄".to_string()] },
+        Entity { id: KitValue::String("👻".to_string()), states: vec![KitValue::String("🌌".to_string())] },    
+        Entity { id: KitValue::String("🚁".to_string()), states: vec![KitValue::String("🔼💨⏳".to_string())] },
+        Entity { id: KitValue::String("🌞".to_string()), states: vec![KitValue::String("🌚".to_string())] },
+        Entity { id: KitValue::String("🦠".to_string()), states: vec![KitValue::String("🦠🌝".to_string())] },
+        Entity { id: KitValue::String("🏙️".to_string()), states: vec![KitValue::String("🏙️".to_string())] },
+        Entity { id: KitValue::String("🛰️".to_string()), states: vec![KitValue::String("📡🔄".to_string())] },
     ];
 
     let mut simulation = Simulation {
         entities: entities.clone(),
         timeline: vec![],
         multiverse: vec![Universe {
-            id: 0,
-            observers: vec!['👻'],
+            id: KitValue::Number(0.0),
+            observers: vec![cause.clone(), KitValue::String("👻".to_string())],
         }],
     };
     
     run_simulation(&mut simulation, &entities, 60);
-    append_to_source();
+    append_to_source(&mut simulation);
     print_source();
+
+    KitValue::String("👻".to_string())
 }
 
 fn run_simulation(sim: &mut Simulation, entities: &Vec<Entity>, max_events: usize) {
     let mut event_count = 0;
     while event_count < max_events {
-        for universe in &mut sim.multiverse {
+        let mut branches = vec![];
+        let mut sun_events = vec![];
+
+        for universe in &sim.multiverse {
             for i in 0..entities.len() {
                 if i > 0 && is_collision(&entities[i - 1], &entities[i], universe) {
-                    println!("⛔ Timeline disturbance detected in universe {}! Collision between {} and {}!", 
+                    println!("⛔ Timeline disturbance detected in universe {:?}! Collision between {:?} and {:?}!", 
                              universe.id, entities[i - 1].id, entities[i].id);
-                    println!("🔍 Causal agent identified: {}", entities[i - 1].id);
-                    if universe.observers.contains(&'👻') {
-                        branch_universe(sim, universe.id, entities[i - 1].id);
+                    println!("🔍 Causal agent identified: {:?}", entities[i - 1].id);
+                    if universe.observers.contains(&KitValue::String("👻".to_string())) {
+                        branches.push((universe.id.clone(), entities[i - 1].id.clone()));
                     }
                 }
             }
-            if universe.observers.contains(&'👻') {
-                execute_sun_event(sim, universe.id);
+            if universe.observers.contains(&KitValue::String("👻".to_string())) {
+                sun_events.push(universe.id.clone());
             }
         }
+
+        for (universe_id, cause) in branches {
+            branch_universe(sim, universe_id, cause);
+        }
+
+        for universe_id in sun_events {
+            execute_sun_event(sim, universe_id);
+        }
+
         event_count += 1;
     }
 }
 
 fn is_collision(entity1: &Entity, entity2: &Entity, universe: &Universe) -> bool {
-    let non_matter_entities = vec!['👻']; // Define non-material entities
+    let non_matter_entities = vec![KitValue::String("👻".to_string())]; // Define non-material entities
     let entity2_is_matter = !non_matter_entities.contains(&entity2.id); // All else is matter
-    let collision = entity1.id == '🚁' && entity2_is_matter; // Helicopter collides with matter
+    let collision = entity1.id == KitValue::String("🚁".to_string()) && entity2_is_matter; // Helicopter collides with matter
     
-    if collision && universe.observers.contains(&'👻') {
+    if collision && universe.observers.contains(&KitValue::String("👻".to_string())) {
         return true;
     }
     false
 }
 
-fn branch_universe(sim: &mut Simulation, parent_id: usize, cause: char) {
-    let new_id = sim.multiverse.len();
+fn branch_universe(sim: &mut Simulation, parent_id: KitValue, cause: KitValue) {
+    let new_id = sim.multiverse.len() as f64;
     let new_universe = Universe {
-        id: new_id,
-        observers: vec![cause, '👻'], // The cause and original observer persist
+        id: KitValue::Number(new_id),
+        observers: vec![cause, KitValue::String("👻".to_string())], // The cause and original observer persist
     };
-    println!("🌌 Branching new universe {} due to {}", new_id, cause);
+    println!("🌌 Branching new universe {} due to {:?}", new_id, cause);
     sim.multiverse.push(new_universe);
 }
 
-fn execute_sun_event(sim: &mut Simulation, universe_id: usize) {
-    println!("🌞 Event triggered in universe {} by observer 👻", universe_id);
+fn execute_sun_event(sim: &mut Simulation, universe_id: KitValue) -> String {
+    println!("🌞 Event triggered in universe {:?} by observer 👻", universe_id);
     for entity in &mut sim.entities {
-        if entity.id == '🌞' {
-            entity.states.push("🌚".to_string()); // Modify sun's state
+        if entity.id == KitValue::String("🌞".to_string()) {
+            entity.states.push(KitValue::String("🌚".to_string())); // Modify sun's state
             println!("🌚 The sun fades!");
         }
     }
+    match sim.entities.last().unwrap().states.last().unwrap() {
+        KitValue::String(s) => s.clone(),
+        _ => "".to_string(),
+    }
 }
 
-fn append_to_source() {
+fn append_to_source(sim: &mut Simulation) {
     let filename = file!();
-    let additional_line = "// 🐍 Self-replicating entity evolves\n";
+    let additional_line = format!("// {} Self-replicating entity evolves [🌞]", execute_sun_event(sim, KitValue::Number(0.0)));
     std::fs::OpenOptions::new()
         .append(true)
         .open(filename)
@@ -108,7 +130,8 @@ fn append_to_source() {
         .expect("Failed to append to source code");
 }
 
-fn print_source() {
+fn print_source() -> String {
     let source = std::fs::read_to_string(file!()).expect("Failed to read source code");
     println!("\nQuine Output:\n\n{}", source);
+    source
 }
