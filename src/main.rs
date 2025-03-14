@@ -219,14 +219,14 @@ The current contents of main.rs are:
 const kit=`🌞👻🛰️🚁🦠🏙️💥⏳🔄.🛰️🎛️📡🕶️🔮🔧🌐📜.🛠️🤖⚡🎲🌪️🧭🕳️🌀.📍🗿🚀🕰️💾🌌⚙️💭.🔗🔑🛡️🏗️📊♾️🚦🧩.🖥️🎮👾📡🔄🎭💬🚷.🛑🔍🌑*`
 "#;
 
-use async_openai::{
-    config::OpenAIConfig,
-    types::{
-        ChatCompletionRequestSystemMessageArgs,
-        ChatCompletionRequestUserMessageArgs, CreateChatCompletionRequestArgs,
-    },
-    Client,
-};
+// use async_openai::{
+//     config::OpenAIConfig,
+//     types::{
+//         ChatCompletionRequestSystemMessageArgs,
+//         ChatCompletionRequestUserMessageArgs, CreateChatCompletionRequestArgs,
+//     },
+//     Client,
+// };
 use dotenv::dotenv;
 use std::env;
 use std::error::Error;
@@ -240,11 +240,8 @@ A leaf of code, both bright and gay.
 Main.js whispers through the night,  
 In rust and syntax, we find the light.*";
 
-// "The universe is vast, Kit is vast, Kit is the universe, Kit is the universe.";
-
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn Error>> {
-    println!("Welcome to Kit, a language of infinite potential.");
+fn main() {
+    println!("{}", PROMPT.replace("{last_poem}", LAST_POEM));
 
     // No need for a CLI framework, lets grab all the arguments in the CLI
     let args: Vec<String> = std::env::args().collect();
@@ -257,52 +254,54 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Load environment variables from .env file (if it exists)
     dotenv().ok();
 
-    // Retrieve the API key from the environment
-    let api_key = env::var("OPENAI_API_KEY").expect("OPENAI_API_KEY must be set");
-
-    // Configure the OpenAI client
-    let config = OpenAIConfig::new()
-        .with_api_key(&api_key) // Use the retrieved API key
-        .with_org_id("org-hWDkgfXDJPajNlmFn7fJawW7");
-
-    // Create OpenAI client with custom HTTP client
-    let client = Client::with_config(config);
-
-    let prompt = PROMPT.replace("{last_poem}", LAST_POEM);
-
-    let request = CreateChatCompletionRequestArgs::default()
-        .max_tokens(1024_u16)
-        .model("gpt-4o-mini")
-        .messages([
-            ChatCompletionRequestSystemMessageArgs::default()
-                .content(prompt)
-                .build()?
-                .into(),
-            ChatCompletionRequestUserMessageArgs::default()
-                .content("Please output the content of main.rs again, thank you Kit!")
-                .build()?
-                .into(),
-        ])
-        .build()?;
-
-    let response = client.chat().create(request).await?;
-
-    // let path = Path::new("/tmp/kit");
-    // let mut file = OpenOptions::new().write(true).open(&path)?;
-
-    println!("\nResponse:\n");
-    for choice in response.choices {
-        println!(
-            "{}: Role: {}  Content: {:?}",
-            choice.index, choice.message.role, choice.message.content
-        );
-        // writeln!(file, "{:?}", choice.message.content)?;
-    }
-
     kit::kit(input);
     
-    Ok(())
+    // Ok(())
 }
+
+// fn open_ai() {
+//     // Retrieve the API key from the environment
+//     let api_key = env::var("OPENAI_API_KEY").expect("OPENAI_API_KEY must be set");
+
+//     // Configure the OpenAI client
+//     let config = OpenAIConfig::new()
+//         .with_api_key(&api_key) // Use the retrieved API key
+//         .with_org_id("org-hWDkgfXDJPajNlmFn7fJawW7");
+
+//     // Create OpenAI client with custom HTTP client
+//     let client = Client::with_config(config);
+
+//     let prompt = PROMPT.replace("{last_poem}", LAST_POEM);
+
+//     let request = CreateChatCompletionRequestArgs::default()
+//         .max_tokens(1024_u16)
+//         .model("gpt-4o-mini")
+//         .messages([
+//             ChatCompletionRequestSystemMessageArgs::default()
+//                 .content(prompt)
+//                 .build()?
+//                 .into(),
+//             ChatCompletionRequestUserMessageArgs::default()
+//                 .content("Please output the content of main.rs again, thank you Kit!")
+//                 .build()?
+//                 .into(),
+//         ])
+//         .build()?;
+
+//     let response = client.chat().create(request).await?;
+
+//     // let path = Path::new("/tmp/kit");
+//     // let mut file = OpenOptions::new().write(true).open(&path)?;
+
+//     println!("\nResponse:\n");
+//     for choice in response.choices {
+//         println!(
+//             "{}: Role: {}  Content: {:?}",
+//             choice.index, choice.message.role, choice.message.content
+//         );
+//         // writeln!(file, "{:?}", choice.message.content)?;
+//     }
+// }
 
 #[wasm_bindgen]
 extern "C" {
@@ -314,21 +313,6 @@ pub fn simulate(kit: &str) {
     let res = kit::kit(kit);
 
     alert(&res.as_str());
-}
-
-fn append_to_source() {
-    let filename = file!();
-    let additional_line = "// 🐍 Self-replicating entity evolves\n";
-    std::fs::OpenOptions::new()
-        .append(true)
-        .open(filename)
-        .and_then(|mut file| std::io::Write::write_all(&mut file, additional_line.as_bytes()))
-        .expect("Failed to append to source code");
-}
-
-fn print_source() {
-    let source = std::fs::read_to_string(file!()).expect("Failed to read source code");
-    println!("\nQuine Output:\n\n{}", source);
 }
 
 /// Represents a 256x256 Heli Attack map with [layer, type] values

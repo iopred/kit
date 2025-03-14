@@ -150,7 +150,8 @@ fn random_radius(radius: i32, center_x: f64, center_y: f64) -> (f64, f64) {
 
 fn append_to_source(sim: &mut Simulation) {
     let filename = file!();
-    let additional_line = format!("// {} Self-replicating entity evolves [🌞]", execute_sun_event(sim, KitValue::Boolean(false)));
+    println!("boop{}", filename);
+    let additional_line = format!("// {} Self-replicating entity evolves [🌞]\n", execute_sun_event(sim, KitValue::Boolean(false)));
     std::fs::OpenOptions::new()
         .append(true)
         .open(filename)
@@ -162,4 +163,5 @@ fn print_source() -> String {
     let source = std::fs::read_to_string(file!()).expect("Failed to read source code");
     println!("{}", source);
     source
-} // 📡🔄 Self-replicating entity evolves [🌞] // 📡🔄 Self-replicating entity evolves [🌞]// 📡🔄 Self-replicating entity evolves [🌞]// 📡🔄 Self-replicating entity evolves [🌞]// 📡🔄 Self-replicating entity evolves [🌞]
+}
+//  Self-replicating entity evolves [🌞]
