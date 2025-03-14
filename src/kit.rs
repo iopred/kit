@@ -29,8 +29,8 @@ struct Universe {
     observers: Vec<KitValue>, // Entities that can observe this universe
 }
 
-pub(crate) fn kit() -> KitValue {
-    let entities = vec![
+pub(crate) fn kit(input: &str) -> KitValue {
+    let mut entities = vec![
         Entity { id: KitValue::String("👻".to_string()), states: vec![KitValue::String("🌌".to_string())] },
         Entity { id: KitValue::String("🔍".to_string()), states: vec![KitValue::String("🧑".to_string())] },
         Entity { id: KitValue::String("🚁".to_string()), states: vec![KitValue::String("🔼💨⏳".to_string())] },
@@ -40,6 +40,15 @@ pub(crate) fn kit() -> KitValue {
         Entity { id: KitValue::String("🛰️".to_string()), states: vec![KitValue::String("📡🔄".to_string())] },
     ];
 
+    if !input.is_empty() {
+        let id = input.chars().next().unwrap().to_string();
+        let state = input.chars().skip(1).collect::<String>();
+        entities.push(Entity {
+            id: KitValue::String(id),
+            states: vec![KitValue::String(state)],
+        });
+    }
+
     let mut simulation = Simulation {
         entities: entities.clone(),
         timeline: vec![],
@@ -47,6 +56,7 @@ pub(crate) fn kit() -> KitValue {
             id: KitValue::Byte(0),
             observers: vec![KitValue::String("👻".to_string())],
         }],
+        observers: vec![],
     };
     
     run_simulation(&mut simulation, &entities, 1);
@@ -106,7 +116,7 @@ fn is_collision(entity1: &Entity, entity2: &Entity, universe: &Universe) -> bool
     false
 }
 
-fn branch_universe(sim: &mut Simulation, parent_id: KitValue, cause: KitValue) {
+fn branch_universe(sim: &mut Simulation, _parent_id: KitValue, cause: KitValue) {
     let new_id = sim.multiverse.len() as f64;
     let new_universe = Universe {
         id: KitValue::Boolean(true), // A new universe must always be contained in universe 1, otherwise our idea doesn't hold.
@@ -128,6 +138,14 @@ fn execute_sun_event(sim: &mut Simulation, universe_id: KitValue) -> String {
         KitValue::String(s) => s.clone(),
         _ => "".to_string(),
     }
+}
+
+fn random_radius(radius: i32, center_x: f64, center_y: f64) -> (f64, f64) {
+    let r = radius as f64 * (rand::random::<f64>().sqrt());
+    let theta = rand::random::<f64>() * 2.0 * std::f64::consts::PI;
+    let x = center_x + r * theta.cos();
+    let y = center_y + r * theta.sin();
+    (x, y)
 }
 
 fn append_to_source(sim: &mut Simulation) {

@@ -216,6 +216,7 @@ README.md
 
 The current contents of main.rs are:
 \'\'\'markdown
+const kit=`🌞👻🛰️🚁🦠🏙️💥⏳🔄.🛰️🎛️📡🕶️🔮🔧🌐📜.🛠️🤖⚡🎲🌪️🧭🕳️🌀.📍🗿🚀🕰️💾🌌⚙️💭.🔗🔑🛡️🏗️📊♾️🚦🧩.🖥️🎮👾📡🔄🎭💬🚷.🛑🔍🌑*`
 "#;
 
 use async_openai::{
@@ -229,13 +230,10 @@ use async_openai::{
 use dotenv::dotenv;
 use std::env;
 use std::error::Error;
-// use interp::interp;
-use rand;
+use serde::Serialize;
+use wasm_bindgen::prelude::*;
 
 mod kit;
-
-// Ensure you have added interp crate in your Cargo.toml:
-// interp = "0.1"
 
 const LAST_POEM: &str = "*In the realm where bytes do play,  
 A leaf of code, both bright and gay.  
@@ -270,12 +268,14 @@ async fn main() -> Result<(), Box<dyn Error>> {
     // Create OpenAI client with custom HTTP client
     let client = Client::with_config(config);
 
+    let prompt = PROMPT.replace("{last_poem}", LAST_POEM);
+
     let request = CreateChatCompletionRequestArgs::default()
         .max_tokens(1024_u16)
         .model("gpt-4o-mini")
         .messages([
             ChatCompletionRequestSystemMessageArgs::default()
-                .content(PROMPT)
+                .content(prompt)
                 .build()?
                 .into(),
             ChatCompletionRequestUserMessageArgs::default()
@@ -284,8 +284,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 .into(),
         ])
         .build()?;
-
-    println!("Boop {}", serde_json::to_string(&request).unwrap());
 
     let response = client.chat().create(request).await?;
 
@@ -301,24 +299,100 @@ async fn main() -> Result<(), Box<dyn Error>> {
         // writeln!(file, "{:?}", choice.message.content)?;
     }
 
-    let center_x = 107.0; // Example center X, 'k' or 107 or 01101001b
-    let center_y = 105.0; // Example center Y, 'i' or 105 or 01101001b
-    let radius = 116; // Example radius T, 't' or 116 or 01110100b
-    // FYI: r, 'r' or 114 or 01110010b
-    // e, 101: 01100101
-    // d, 100: 01100100
-    let random_point = random_radius(radius, center_x, center_y);
-    println!("Random Point: {:?}", random_point);
-
-    kit::kit();
+    kit::kit(input);
     
     Ok(())
 }
 
-fn random_radius(radius: i32, center_x: f64, center_y: f64) -> (f64, f64) {
-    let r = radius as f64 * (rand::random::<f64>().sqrt());
-    let theta = rand::random::<f64>() * 2.0 * std::f64::consts::PI;
-    let x = center_x + r * theta.cos();
-    let y = center_y + r * theta.sin();
-    (x, y)
+#[wasm_bindgen]
+extern "C" {
+    fn alert(s: &str);
+}
+
+#[wasm_bindgen]
+pub fn simulate(kit: &str) {
+    let res = kit::kit(kit);
+
+    alert(&res.as_str());
+}
+
+fn append_to_source() {
+    let filename = file!();
+    let additional_line = "// 🐍 Self-replicating entity evolves\n";
+    std::fs::OpenOptions::new()
+        .append(true)
+        .open(filename)
+        .and_then(|mut file| std::io::Write::write_all(&mut file, additional_line.as_bytes()))
+        .expect("Failed to append to source code");
+}
+
+fn print_source() {
+    let source = std::fs::read_to_string(file!()).expect("Failed to read source code");
+    println!("\nQuine Output:\n\n{}", source);
+}
+
+/// Represents a 256x256 Heli Attack map with [layer, type] values
+type Map = [[(u8, u8); 256]; 256];
+
+/// Struct to hold the map data for serialization
+#[derive(Serialize)]
+struct MapChunk {
+    data: Vec<Vec<(u8, u8)>>,
+}
+
+/// Takes a rune string and returns chunks of the 9x9 bottom-right grid
+#[wasm_bindgen]
+pub fn emoji_to_heli_attack_map(emoji_input: &str) -> String {
+    // Initialize a blank 256x256 map (simplified from your JS example)
+    let mut map: Map = [[(0, 0); 256]; 256];
+
+    // Populate bottom-right 9x9 grid (247-255 x 247-255) with sample data
+    // Example from MAP_1: sparse [1, x] values
+    map[251][254] = (1, 3);  // Sample from your MAP_1 row 12, col 34
+    map[252][251] = (1, 5);  // Row 13, col 17
+    map[253][252] = (1, 2);  // Row 14, col 18
+    map[254][253] = (1, 2);  // Row 15, col 19
+
+    // Collect runes from input string
+    let runes: Vec<char> = emoji_input.chars().collect();
+    let rune_len = runes.len();
+
+    // Define the 9x9 grid bounds (247-255 x 247-255)
+    const GRID_START: usize = 247;
+    const GRID_END: usize = 256;
+    const GRID_SIZE: usize = 9;
+
+    // Output chunks: Vec of 9x9 grids influenced by runes
+    let mut chunks = Vec::new();
+
+    // Generate one chunk for simplicity; could loop for multiple based on rune_len
+    let mut chunk = Vec::with_capacity(GRID_SIZE * GRID_SIZE);
+    
+    // Map runes to tile modifications
+    for y in GRID_START..GRID_END {
+        for x in GRID_START..GRID_END {
+            // Base tile from map
+            let mut tile = map[y][x];
+            
+            // If center (251, 251), highlight it; otherwise, rune influence
+            if x == 251 && y == 251 {
+                tile = (1, 9); // Center "shown" marker
+            } else if rune_len > 0 {
+                // Use rune index to tweak tile type (simple hash)
+                let rune_idx = (x + y) % rune_len;
+                let rune_val = runes[rune_idx] as u32 % 16; // Cap at 0-15
+                if tile.0 == 0 { // Only modify empty tiles
+                    tile = (1, rune_val as u8);
+                }
+            }
+            
+            chunk.push(tile);
+        }
+    }
+
+    chunks.push(chunk);
+
+    // Serialize the chunks to JSON
+    let map_chunk = MapChunk { data: chunks };
+    serde_json::to_string(&map_chunk).unwrap()
 }

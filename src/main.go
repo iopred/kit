@@ -310,8 +310,9 @@ func main() {
 					http.ServeFile(w, r, filename+".png")
 				}
 			case "html":
-			default:
 				htmlHandler(w, r, filename)
+			default:
+				emojiWebSocketHandler(w, r)
 			}
 		},
 	)
@@ -435,7 +436,8 @@ func generateQR(filename, url string) error {
 	return nil
 }
 
-const kit = "🚁👻🌞🦠🏙️💥⏳🔄🛰️🎛️📡🕶️🔮🔧🌐📜🛠️🤖⚡🎲🌪️🧭🕳️🌀📍🗿🚀🕰️💾🌌⚙️💭🔗🔑🛡️🏗️📊♾️🚦🧩🖥️🎮👾📡🔄🎭💬🚷🛑🔍"
+// Find your mech, find the time machine, destroy the universe, and rebuild it
+const kit = "🌞👻🛰️🚁🦠🏙️💥⏳🔄.🛰️🎛️📡🕶️🔮🔧🌐📜.🛠️🤖⚡🎲🌪️🧭🕳️🌀.📍🗿🚀🕰️💾🌌⚙️💭.🔗🔑🛡️🏗️📊♾️🚦🧩.🖥️🎮👾📡🔄🎭💬🚷.🛑🔍🌑*"
 
 var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
@@ -484,14 +486,16 @@ func emojiWebSocketHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func getEmojiForFrame(frame int, universe string) string {
+func getEmojiForFrame(frame int, universe string) (emoji string) {
+	if frame <= 0 {
+		return "🌞"
+	}
 	for index, runeValue := range kit {
 		fmt.Printf("%#U starts at byte position %d\n", runeValue, index)
 		if index == (frame%60)%len(kit) {
-			return string(runeValue)
+			emoji += string(runeValue)
 		}
 	}
-	return "🌞"
 }
 
 type Node struct {

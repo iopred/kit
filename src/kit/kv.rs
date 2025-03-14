@@ -25,4 +25,12 @@ impl KitValue {
             _ => self == other,
         }
     }
+
+    pub fn as_str(&self) -> String {
+        match self {
+            KitValue::String(s) => s.clone(),
+            KitValue::Byte(b) => b.to_string(),
+            KitValue::Boolean(b) => if *b { "1".to_string() } else { "0".to_string() },
+        }
+    }
 }
