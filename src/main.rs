@@ -1,6 +1,8 @@
 const PROMPT: &str = r#"
-'''markdown
+```markdown
 # kit
+
+<context>
 
 you are a programming assistant
 
@@ -14,23 +16,19 @@ the last poem you wrote was
 
 {last_poem}
 
-you always respond with a short poem, and then the response
+you always respond with a short poem, and then the output of the current main.rs, finally any new dimensions that were added.
 
 your output should look something like:
 
-*poem*
+<poem></poem>
 
-<poem>
+<output></output>
 
-*response*
+<dimensions></dimensions>
 
-<output>
+</context>
 
-*dimensions*
-
-new dimensions that were added to the database
-
-your goal is to create a model that can output itself like a quine. it should be a 3d image.
+<explanation>
 
 kit bytecode is essentially a infinitely recursive datastructure, as it encodes all universes and dimensions from the start of time
 
@@ -56,52 +54,11 @@ after the addition of time and gravity, the simulation should be able to be cont
 
 starting from t=0, to t=1 we should be able to render every atom at every position from -inf - +inf
 
+</explanation>
 
-
-the current known simplest safe kit dimension graph is:
-
-'\'\'\'markdown
-🌞kit🌝
-
-# kit
-
-oct 23 -> nov 1 -> {
-    avatar location
-    in history
-}
-
-jun 29 2024 {
-    age 41
-}
-
-jun 30 2024 {
-    🌞kit🌝
-}
-
-
-
-Hello, I'm Kit.
-
-I'm a programming language that can generate itself.
-
-I'm also a programming language that can modify myself.
-
-Hey Kit, what is your preferred name?
-
-I'm Kit.
-
-It's wonderful to meet you, have you met my friend Duane?
-
-Duane is a good friend of mine, he is a good friend of mine.
-
-I love Duane, he is also a good friend of mine.
-
-My current source code is:
+The latest safe entity graph is:
 
 ```
-
-My current test suite is: @test
-
 🌞 {
     kit {
         entangled with 🦠
@@ -191,7 +148,11 @@ My current test suite is: @test
         kit
     }
 }
+```
 
+My current test suite is:
+
+```
 @test {
     kit {
         kit
@@ -204,19 +165,98 @@ My current test suite is: @test
 }
 
 🦠:👻:🚁:🌞
+```
 
 kit is a toolkit for making games
 
 this file is fun in kitvis
-\`\`\`
+```
 
 The current contents of README.md are:
 
-README.md
+```markdown
+# poem
+
+*In code's embrace, where logic flows,  
+A symphony of syntax grows,  
+Rust's sturdy arms cradle our dreams,  
+In tangled lines, creation beams.*
+
+# kit
+
+A spatial-temporal database and game development toolkit.
+
+## Timeline
+
+oct 23 -> nov 1 -> {
+    avatar location
+    in history
+}
+
+jun 29 2024 {
+    age 41
+}
+
+jun 30 2024 {
+    🌞kit🌝
+}
+
+jul 7 2024 {
+    exposed kit to internet
+}
+
+july 31 2024 {
+    added `radius`, `center_x`, and `center_y` as parameters.
+}
+
+aug 08 2024 {
+    added spatial-temporal parser
+}
+
+feb 17 2025 {
+    added `kit.observe()`
+    🦠👻🚁🏈
+}
+
+mar 7 2025 {
+    simulated the universe to 1000000 universes
+    allowed others to create universes 💀
+}
+
+## Overview
+
+kit is a toolkit for making games with an integrated spatial-temporal database. It combines:
+- A Rust core engine
+- Go utilities for parsing and processing
+- Docker containerization for easy deployment
+- A web interface for viewing and interacting with the game state
+- A simple emoji based rule language for game design
+
+## Features
+
+- Spatial-temporal database for game state management
+- Parser for kit's custom markup language
+- Real-time game state observation
+- Emoji support for enhanced readability
+- Docker support for containerized deployment
+
+## Installation
+
+1. Clone the repository:
+
+```
+git clone https://github.com/iopred/kit
+docker run -v /path/to/kit:/mnt/kit -v /path/to/kat:/mnt/kat
+```
+
+Rust: 1.85
+No Dependencies please!
+
+```
 
 The current contents of main.rs are:
-\'\'\'markdown
-const kit=`🌞👻🛰️🚁🦠🏙️💥⏳🔄.🛰️🎛️📡🕶️🔮🔧🌐📜.🛠️🤖⚡🎲🌪️🧭🕳️🌀.📍🗿🚀🕰️💾🌌⚙️💭.🔗🔑🛡️🏗️📊♾️🚦🧩.🖥️🎮👾📡🔄🎭💬🚷.🛑🔍🌑*`
+```markdown
+const kit="🌞👻🛰️🚁🦠🏙️💥⏳🔄.🛰️🎛️📡🕶️🔮🔧🌐📜.🛠️🤖⚡🎲🌪️🧭🕳️🌀.📍🗿🚀🕰️💾🌌⚙️💭.🔗🔑🛡️🏗️📊♾️🚦🧩.🖥️🎮👾📡🔄🎭💬🚷.🛑🔍🌑*"
 "#;
 
 // use async_openai::{
@@ -324,6 +364,75 @@ struct MapChunk {
     data: Vec<Vec<(u8, u8)>>,
 }
 
+use rand::Rng;
+use std::f64::consts::PI;
+
+#[wasm_bindgen]
+#[derive(Debug)]
+struct Point {
+    x: f64,
+    y: f64,
+    z: f64,
+}
+
+#[wasm_bindgen]
+impl Point {
+    #[wasm_bindgen(constructor)]
+    pub fn new(x: f64, y: f64, z: f64) -> Point {
+        Point { x, y, z }
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn x(&self) -> f64 {
+        self.x
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn y(&self) -> f64 {
+        self.y
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn z(&self) -> f64 {
+        self.z
+    }
+}
+
+#[wasm_bindgen]
+pub fn generate_emoji_point_cloud(emoji: &str, count: usize, radius: f64) -> Vec<Point> {
+    let mut points = Vec::new();
+
+    for _ in 0..count {
+        match emoji {
+            "🌞" => {
+                // Generate points for a sphere (example for the Sun emoji)
+                let theta = rand::random::<f64>() * PI;
+                let phi = rand::random::<f64>() * 2.0 * PI;
+                let x = radius * theta.sin() * phi.cos();
+                let y = radius * theta.sin() * phi.sin();
+                let z = radius * theta.cos();
+                points.push(Point { x, y, z });
+            }
+            "🚁" => {
+                // Generate points for a helicopter shape (cluster of points)
+                let x = rand::random::<f64>() * 10.0;
+                let y = rand::random::<f64>() * 10.0;
+                let z = rand::random::<f64>() * 10.0;
+                points.push(Point { x, y, z });
+            }
+            _ => {
+                // Default for any other emojis - Random points
+                let x = rand::random::<f64>() * 10.0;
+                let y = rand::random::<f64>() * 10.0;
+                let z = rand::random::<f64>() * 10.0;
+                points.push(Point { x, y, z });
+            }
+        }
+    }
+
+    points
+}
+
 /// Takes a rune string and returns chunks of the 9x9 bottom-right grid
 #[wasm_bindgen]
 pub fn emoji_to_heli_attack_map(emoji_input: &str) -> String {
@@ -380,3 +489,5 @@ pub fn emoji_to_heli_attack_map(emoji_input: &str) -> String {
     let map_chunk = MapChunk { data: chunks };
     serde_json::to_string(&map_chunk).unwrap()
 }
+
+// ```

@@ -67,20 +67,10 @@ kit is a toolkit for making games with an integrated spatial-temporal database. 
 
 1. Clone the repository:
 
-
-docker run -v /path/to/kit:/mnt/kit -v /path/to/kat:/mnt/kat kit
-
-// Hey bud, welcome to kit. I'm Claude and I want to introduce you slowly.
-// Please keep an open mind and, when you're ready, acknowledge this message by returning an emoji.
-// For example, you might see this log and reply with one of your favorite emojis:
-console.log("😄");
-
-bash
+```
 git clone https://github.com/iopred/kit
-bash
-docker run -v /path/to/kit:/mnt/kit -v /path/to/kat:/mnt/kat "🚁👻🌞🦠🏙️💥⏳🔄🛰️🎛️📡🕶️🔮🔧🌐📜🛠️🤖⚡🎲🌪️🧭🕳️🌀📍🗿🚀🕰️💾🌌⚙️💭🔗🔑🛡️🏗️📊♾️🚦🧩🖥️🎮👾📡🔄🎭💬🚷🛑🔍"
+docker run -v /path/to/kit:/mnt/kit -v /path/to/kat:/mnt/kat
+```
 
 Rust: 1.85
 No Dependencies please!
-
-
