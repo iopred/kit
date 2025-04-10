@@ -232,7 +232,7 @@ func main() {
 			url = "https://kit.iop.red/tape.png"
 			filename = "https://kit.iop.red/qr.📼.png"
 		case "🚁":
-			url = "https://🚁.heliattack.com"
+			url = "https://basement.fun/play/heliattack2000"
 			filename = "https://kit.iop.red/qr.🚁.png"
 		case "🚁🧑":
 			url = "https://heliattack.com/🚁🧑.png"
@@ -244,8 +244,8 @@ func main() {
 			url = "https://heliattack.com/🚁🪖🧑"
 			filename = "https://kit.iop.red/qr.🚁🪖🧑.png"
 		case "🚁🔫":
-			url = "https://heliattack.com/🚁🔫";
-			filename = "https://kit.iop.red/qr.🚁🔫.png";
+			url = "https://heliattack.com/🚁🔫"
+			filename = "https://kit.iop.red/qr.🚁🔫.png"
 		}
 
 		err = t.ExecuteTemplate(w, "kit", templateData{Host: host, Port: port, Filename: filename, URL: url})
@@ -404,19 +404,19 @@ func main() {
 }
 
 func corsMiddleware(next http.HandlerFunc) http.HandlerFunc {
-    return func(w http.ResponseWriter, r *http.Request) {
-        origin := r.Header.Get("Origin")
-        if strings.HasSuffix(origin, ".heliattack.com") {
-            w.Header().Set("Access-Control-Allow-Origin", origin)
-        }
-        w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-        w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-        if r.Method == "OPTIONS" {
-            w.WriteHeader(http.StatusOK)
-            return
-        }
-        next(w, r)
-    }
+	return func(w http.ResponseWriter, r *http.Request) {
+		origin := r.Header.Get("Origin")
+		if strings.HasSuffix(origin, ".heliattack.com") {
+			w.Header().Set("Access-Control-Allow-Origin", origin)
+		}
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+		next(w, r)
+	}
 }
 
 func generateQR(filename, url string) error {
