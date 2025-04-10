@@ -274,6 +274,12 @@ func main() {
 		if filename == "📼" {
 			filename = "tape"
 		}
+		if filename == "🛸" {
+			filename = "https://ufo.naa.mba"
+		}
+		if filename == "🚁" {
+			filename = "https://basement.fun/play/heliattack2000"
+		}
 
 		qrCode, _ := qrcode.New(filename, qrcode.Low)
 		if err := qrCode.Write(11, w); err != nil {
