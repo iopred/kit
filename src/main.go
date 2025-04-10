@@ -168,7 +168,7 @@ func main() {
 </head>
 <body>
 <iframe src='{{.URL}}'></iframe>
-<img src='/{{.Filename}}' id="qr" onclick="hideElement(this)" style="cursor: pointer;"/>
+<img src='/{{.Filename}}' id="qr" onclick="hideElement(this)" style="cursor: pointer;" width="99px" height="99px"/>
 
 <script>
 	function hideElement(element) {
