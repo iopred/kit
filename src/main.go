@@ -193,7 +193,7 @@ func main() {
 		case "ha2k":
 			fallthrough
 		case "ha2000":
-			url = "https://ha2k.heliattack.com"
+			url = "https://basement.fun/play/heliattack2000"
 			filename = "ha2000"
 		case "ufo":
 			fallthrough
@@ -235,7 +235,7 @@ func main() {
 			url = "https://kit.iop.red/emoji/🌛"
 			filename = "https://kit.iop.red/qr.🌛.png"
 		case "🚁":
-			url = "https://🚁.heliattack.com"
+			url = "https://basement.fun/play/heliattack2000"
 			filename = "https://kit.iop.red/qr.🚁.png"
 		case "🚁🧑":
 			url = "https://heliattack.com/🚁🧑.png"
@@ -370,7 +370,8 @@ func main() {
 	}))
 
 	http.HandleFunc("/🚁", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
-		htmlHandler(w, r, "🚁")
+		// htmlHandler(w, r, "🚁")
+		http.Redirect(w, r, "https://basement.fun/play/heliattack2000", http.StatusTemporaryRedirect)
 	}))
 
 	http.HandleFunc("/📼", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
