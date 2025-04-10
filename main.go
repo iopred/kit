@@ -161,7 +161,7 @@ func main() {
 </head>
 <body>
 <iframe src='{{.URL}}'></iframe>
-<img src='/{{.Filename}}' id="qr" onclick="hideElement(this)" style="cursor: pointer;"/>
+<img src='/{{.Filename}}' id="qr" onclick="hideElement(this)" style="cursor: pointer;" width="99px" height="99px"/>
 
 <script>
 	function hideElement(element) {
@@ -186,13 +186,17 @@ func main() {
 		case "ha2k":
 			fallthrough
 		case "ha2000":
-			url = "https://ha2k.heliattack.com"
+			url = "https://basement.fun/play/heliattack2000"
 			filename = "ha2000"
+		case "kit":
+			fallthrough
+		case "🛸":
+			fallthrough
 		case "ufo":
 			fallthrough
 		case "ufo.naa.mba":
-			filename = "https://kit.iop.red/qr.🛸.png"
 			url = "https://ufo.naa.mba"
+			filename = "https://kit.iop.red/qr.🛸.png"
 		case "naamba":
 			fallthrough
 		case "naa.mba":
@@ -262,6 +266,12 @@ func main() {
 
 		if filename == "📼" {
 			filename = "tape"
+		}
+		if filename == "🛸" {
+			filename = "https://ufo.naa.mba"
+		}
+		if filename == "🚁" {
+			filename = "https://basement.fun/play/heliattack2000"
 		}
 
 		qrCode, _ := qrcode.New(filename, qrcode.Low)
@@ -380,6 +390,10 @@ func main() {
 
 	http.HandleFunc("/emoji/", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		emojiHandler(w, r, r.URL.Path[len("/emoji/"):])
+	}))
+
+	http.HandleFunc("/🛸", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		htmlHandler(w, r, "🛸")
 	}))
 
 	srv := &http.Server{
