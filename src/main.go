@@ -203,6 +203,7 @@ func main() {
 			fallthrough
 		case "ufo.naa.mba":
 			url = "https://ufo.naa.mba"
+			filename = "https://kit.iop.red/qr.🛸.png"
 		case "naamba":
 			fallthrough
 		case "naa.mba":
