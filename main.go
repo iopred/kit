@@ -155,6 +155,10 @@ func main() {
 			position: absolute;
 			right: 10px;
 			bottom: 10px;
+			image-rendering: pixelated;
+			image-rendering: -moz-crisp-edges;
+			image-rendering: -webkit-crisp-edges;
+			image-rendering: crisp-edges;
 		}
 	</style>
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
