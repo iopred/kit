@@ -487,11 +487,12 @@ func emojiWebSocketHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getEmojiForFrame(frame int, universe string) (emoji string) {
+	emoji = "🌞"
 	if frame <= 0 {
-		return "🌞"
+		return
 	}
 	for index, runeValue := range kit {
-		fmt.Printf("%#U starts at byte position %d\n", runeValue, index)
+		// fmt.Printf("%#U starts at byte position %d\n", runeValue, index)
 		if index == (frame%60)%len(kit) {
 			emoji += string(runeValue)
 		}
