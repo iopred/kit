@@ -195,6 +195,10 @@ func main() {
 		case "ha2000":
 			url = "https://basement.fun/play/heliattack2000"
 			filename = "ha2000"
+		case "kit":
+			fallthrough
+		case "🛸":
+			fallthrough
 		case "ufo":
 			fallthrough
 		case "ufo.naa.mba":
