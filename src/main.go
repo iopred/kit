@@ -386,6 +386,10 @@ func main() {
 		htmlHandler(w, r, "📼")
 	}))
 
+	http.HandleFunc("/🛸", corsMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		htmlHandler(w, r, "🛸")
+	}))
+
 	// Todo, test and verify refactor
 	// http.Handle("/emoji/", corsMiddleware(http.StripPrefix("/emoji/", http.FileServer(http.Dir("emoji")))))
 
